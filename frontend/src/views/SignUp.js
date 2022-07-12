@@ -1,9 +1,32 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { TextField, Paper, Typography, Alert, Button, Box } from "@mui/material";
 import { Link } from 'react-router-dom';
+import { registerUser } from '../api/user';
+
+
+
 
 export default function SignUp() {
-    return (
+
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+
+  function createAccount() {
+    const user = {
+      username,
+      password,
+      email
+    }
+    registerUser(user)
+
+    setUsername("");
+    setEmail("");
+    setPassword("");
+  }
+
+
+  return (
         <>
             <Paper
               elevation={10}
@@ -31,6 +54,8 @@ export default function SignUp() {
               <TextField
                 label="Email"
                 variant="filled"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
                 autoComplete="off"
               />
@@ -38,12 +63,16 @@ export default function SignUp() {
                 label="Username"
                 variant="filled"
                 required
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 autoComplete="off"
               />
              <TextField
                 label="Password"
                 type="password"
                 variant="filled"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 required
                 autoComplete="off"
               />
@@ -52,6 +81,7 @@ export default function SignUp() {
                   type="submit"
                   variant="contained"
                   color="primary"
+                  onClick={createAccount}
                 >
                   Sign Up
                 </Button>

@@ -1,10 +1,13 @@
 const User = require('./UserModel');
+const bcrypt = require('bcrypt');
+
 
 
 const register = async (req, res, next) => {
     const { username, email, password } = req.body;
+    const encryptedPassword = await bcrypt.hash(password, 10)
 
-    let user = new User ({ username, email, password});
+    let user = new User ({ username, email, password: encryptedPassword});
 
     const userExists = await User.findOne({"$or": [{ username: username}, {email: email}]}).exec();
     
