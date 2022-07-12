@@ -1,25 +1,39 @@
-import logo from './logo.svg';
-import './App.css';
+
+import SignUp from './views/SignUp';
+import "@fontsource/roboto";
+import { ThemeProvider } from "@mui/material/styles";
+import { createTheme } from "@mui/material";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import "./style.css";
+import Login from './views/Login';
+
+
+const customTheme = createTheme({
+  palette: {
+    primary: {
+      main: "#3f51b5",
+    },
+    secondary: {
+      main: "#f50057",
+    },
+  },
+});
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <ThemeProvider theme={customTheme}>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/Login" element={<Login/>}>
+          </Route>
+          <Route path="/SignUp" element={<SignUp/>}>
+          </Route>
+          <Route path="/" element={<Navigate to="/Login" />}/>
+
+        </Routes>
+      </BrowserRouter>  
+    </ThemeProvider>
+  )
 }
 
 export default App;
