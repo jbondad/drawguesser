@@ -1,9 +1,26 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { TextField, Paper, Typography, Alert, Button, Box } from "@mui/material";
 import { Link } from 'react-router-dom';
+import { postLogin } from '../api/user';
 
 export default function Login() {
-    return (
+
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
+  function handleLogin() {
+    const user = {
+      username,
+      password,
+    }
+    postLogin(user)
+
+    setUsername("");
+    setPassword("");
+  }
+
+
+  return (
         <>
             <Paper
               elevation={10}
@@ -29,21 +46,19 @@ export default function Login() {
                 Sign in
               </Typography>
               <TextField
-                label="Email"
-                variant="filled"
-                required
-                autoComplete="off"
-              />
-              <TextField
                 label="Username"
                 variant="filled"
                 required
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 autoComplete="off"
               />
              <TextField
                 label="Password"
                 type="password"
                 variant="filled"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 required
                 autoComplete="off"
               />
@@ -52,13 +67,14 @@ export default function Login() {
                   type="submit"
                   variant="contained"
                   color="primary"
+                  onClick={handleLogin}
                 >
-                  Sign In
+                  Sign in
                 </Button>
               </div>
               <Link to='/SignUp'>
               <Typography>
-                Don't have an account? Sign Up here
+                Don't have an account? Sign up here.
               </Typography>
               </Link>
             </Paper>

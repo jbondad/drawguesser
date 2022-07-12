@@ -1,6 +1,34 @@
 const User = require('./UserModel');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
+const secret = 'ilovechicken'
+
+
+const login = async (req, res, next) => {
+    const { username, password } = req.body;
+
+    const user = await User.findOne({username}).lean();
+
+    if(!user){
+        return res.json({message: "Invalid username/password"});
+    }
+
+    if(await bcrypt.compare(password, user.password)){
+        const payload = {
+            id: user._id,
+            username: user.username
+        }
+        const token = jwt.sign(payload, secret);
+
+        return res.json({message: "Successful Login", data: token});
+    } else {
+        return res.json({message: "Incorrect password"});
+
+    }
+
+
+}
 
 
 const register = async (req, res, next) => {
@@ -32,5 +60,5 @@ const register = async (req, res, next) => {
 }
 
 module.exports = {
-    register
+    register, login
 }
