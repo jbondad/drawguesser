@@ -1,22 +1,32 @@
 import React, { useState } from 'react'
 import { TextField, Paper, Typography, Alert, Button, Box } from "@mui/material";
+import { login } from '../features/authSlice';
 import { Link } from 'react-router-dom';
 import { postLogin } from '../api/user';
+import { useSelector, useDispatch } from 'react-redux';
+import { toast, ToastContainer } from 'react-toastify';
 
 export default function Login() {
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const dispatch = useDispatch();
 
-  function handleLogin() {
-    const user = {
+  async function handleLogin() {
+    const payload = {
       username,
       password,
     }
-    postLogin(user)
-
+    const user = await postLogin(payload)
+    dispatch(login(user))
+    localStorage.setItem('user', JSON.stringify(user));
     setUsername("");
     setPassword("");
+
+    const notify = () => toast.success("Successfully logged in!", {
+      toastId: 'loggedIn'
+    });
+    notify();
   }
 
 
@@ -47,8 +57,7 @@ export default function Login() {
               </Typography>
               <TextField
                 label="Username"
-                variant="filled"
-                required
+                variant="outlined"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 autoComplete="off"
@@ -56,10 +65,10 @@ export default function Login() {
              <TextField
                 label="Password"
                 type="password"
-                variant="filled"
+                variant="outlined"
+                inputa
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                required
                 autoComplete="off"
               />
               <div>

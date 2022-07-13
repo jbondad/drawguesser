@@ -21,7 +21,7 @@ const login = async (req, res, next) => {
         }
         const token = jwt.sign(payload, secret);
 
-        return res.json({message: "Successful Login", data: token});
+        return res.json({token, username: user.username});
     } else {
         return res.json({message: "Incorrect password"});
 

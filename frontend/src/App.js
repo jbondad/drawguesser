@@ -7,6 +7,9 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import "./style.css";
 import Login from './views/Login';
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const customTheme = createTheme({
   palette: {
@@ -31,7 +34,8 @@ function App() {
           <Route path="/" element={<Navigate to="/Login" />}/>
 
         </Routes>
-      </BrowserRouter>  
+      </BrowserRouter> 
+      <ToastContainer /> 
     </ThemeProvider>
   )
 }
