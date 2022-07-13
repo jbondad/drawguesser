@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { TextField, Paper, Typography, Alert, Button, Box } from "@mui/material";
 import { login } from '../features/authSlice';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { postLogin } from '../api/user';
 import { useSelector, useDispatch } from 'react-redux';
 import { toast, ToastContainer } from 'react-toastify';
@@ -11,6 +11,7 @@ export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   async function handleLogin() {
     const payload = {
@@ -27,6 +28,7 @@ export default function Login() {
       toastId: 'loggedIn'
     });
     notify();
+    navigate("/HomePage");
   }
 
 
