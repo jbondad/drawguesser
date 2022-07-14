@@ -11,7 +11,7 @@ const login = async (req, res, next) => {
     const user = await User.findOne({username}).lean();
 
     if(!user){
-        return res.json({message: "Invalid username/password"});
+        return res.json({message: 'Invalid username/password'});
     }
 
     if(await bcrypt.compare(password, user.password)){
@@ -21,9 +21,9 @@ const login = async (req, res, next) => {
         }
         const token = jwt.sign(payload, secret);
 
-        return res.json({token, username: user.username});
+        return res.json({token, username: user.username, id: user._id});
     } else {
-        return res.json({message: "Incorrect password"});
+        return res.json({message: 'Incorrect password'});
 
     }
 
@@ -37,11 +37,11 @@ const register = async (req, res, next) => {
 
     let user = new User ({ username, email, password: encryptedPassword});
 
-    const userExists = await User.findOne({"$or": [{ username: username}, {email: email}]}).exec();
+    const userExists = await User.findOne({'$or': [{ username: username}, {email: email}]}).exec();
     
     if(userExists){
         res.status(422).json({
-            message: "Username or Email already in use."
+            message: 'Username or Email already in use.'
         })
     } else {
         user.save().then(user=> {

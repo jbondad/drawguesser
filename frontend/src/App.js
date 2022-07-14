@@ -1,26 +1,27 @@
-import SignUp from "./views/SignUp";
-import "@fontsource/roboto";
-import { ThemeProvider } from "@mui/material/styles";
-import { createTheme } from "@mui/material";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import "./style.css";
-import Login from "./views/Login";
-import { login } from "./features/authSlice";
-import { useEffect } from "react";
-import { useDispatch } from "react-redux";
-import PrivateRoute from "./PrivateRoute/privateRoute";
-import HomePage from "./views/HomePage";
+import SignUp from './views/SignUp';
+import '@fontsource/roboto';
+import { ThemeProvider } from '@mui/material/styles';
+import { createTheme } from '@mui/material';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import './style.css';
+import Login from './views/Login';
+import { login } from './features/authSlice';
+import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import PrivateRoute from './PrivateRoute/privateRoute';
+import HomePage from './views/HomePage';
+import GamePage from './views/GamePage';
 
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const customTheme = createTheme({
   palette: {
     primary: {
-      main: "#3f51b5",
+      main: '#3f51b5',
     },
     secondary: {
-      main: "#f50057",
+      main: '#f50057',
     },
   },
 });
@@ -33,11 +34,11 @@ function App() {
   }, []);
 
   function initializeActiveUser() {
-    const activeUser = localStorage.getItem("user") !== null;
+    const activeUser = localStorage.getItem('user') !== null;
     console.log(activeUser);
 
     if (activeUser) {
-      const userObject = JSON.parse(localStorage.getItem("user"));
+      const userObject = JSON.parse(localStorage.getItem('user'));
       console.log(userObject);
       dispatch(login(userObject));
     }
@@ -47,10 +48,10 @@ function App() {
     <ThemeProvider theme={customTheme}>
       <BrowserRouter>
         <Routes>
-          <Route path="/Login" element={<Login />}></Route>
-          <Route path="/SignUp" element={<SignUp />}></Route>
+          <Route path='/Login' element={<Login />}></Route>
+          <Route path='/SignUp' element={<SignUp />}></Route>
           <Route
-            path="/"
+            path='/'
             element={
               <PrivateRoute>
                 <HomePage />
@@ -58,10 +59,18 @@ function App() {
             }
           />
           <Route
-            path="HomePage"
+            path='HomePage'
             element={
               <PrivateRoute>
                 <HomePage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path='GamePage'
+            element={
+              <PrivateRoute>
+                <GamePage />
               </PrivateRoute>
             }
           />

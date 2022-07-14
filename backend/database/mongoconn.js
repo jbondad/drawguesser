@@ -5,7 +5,7 @@
  * callbacks to the database
  */
 
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 module.exports = () => {
     const uri = process.env.MONGO_URI;
@@ -17,10 +17,10 @@ module.exports = () => {
 
     try {
         mongoose.connect(uri, connectionsParams);
-        console.log("Connected to database successfully");
+        console.log('Connected to database successfully');
     } catch (error) {
         console.log(error);
-        console.log("Could not connect to database");
+        console.log('Could not connect to database');
     }
 
 }
