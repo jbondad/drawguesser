@@ -4,6 +4,6 @@ module.exports = class Player {
         this.username = username;
         this.roomCreator = false;
         this.gameReady = false;
-        this.role = null;
+        this.score = 0;
     }
 }

@@ -25,17 +25,26 @@ export default function Login() {
       password,
     };
     const user = await postLogin(payload);
-    dispatch(login(user));
-    localStorage.setItem('user', JSON.stringify(user));
+    if(user.token){
+      dispatch(login(user));
+      localStorage.setItem('user', JSON.stringify(user));
+      const notify = () =>
+        toast.success('Successfully logged in!', {
+          toastId: 'loggedIn',
+        });
+      notify();
+      navigate('/HomePage');
+    } else {
+      const notify = () =>
+      toast.error('Invalid Login', {
+        toastId: 'invalid',
+      });
+      notify();
+    }
+
     setUsername('');
     setPassword('');
 
-    const notify = () =>
-      toast.success('Successfully logged in!', {
-        toastId: 'loggedIn',
-      });
-    notify();
-    navigate('/HomePage');
   }
 
   return (

@@ -8,7 +8,7 @@ const initialState = {
 };
 
 const lobbySlice = createSlice({
-  name: 'auth',
+  name: 'lobby',
   initialState,
   reducers: {
     setRoomCode: (state, action) => {

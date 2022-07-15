@@ -31,7 +31,7 @@ export default function HomePage() {
   { 
     console.log("creating game");
     const userInfo = {
-      id: user.id,
+      _id: user.id,
       username: user.username,
     }
     socket.emit('createGame', userInfo);
@@ -40,7 +40,12 @@ export default function HomePage() {
 
 
   function joinGame() {
-    socket.emit("joinGame", gameCode);
+    const userInfo = {
+      _id: user.id,
+      username: user.username,
+    }
+    socket.emit("joinGame", {user: userInfo, roomCode: gameCode});
+    navigate('/GamePage');
   }
 
   useEffect(() => {
@@ -99,7 +104,7 @@ export default function HomePage() {
               onChange={e => setGameCode(e.target.value)}
               placeholder='ENTER CODE'
             />
-            <Button variant='contained' disableElevation>
+            <Button onClick={()=>joinGame()} variant='contained' disableElevation>
               JOIN GAME
             </Button>
           </FormGroup>

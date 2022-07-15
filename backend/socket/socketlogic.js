@@ -29,26 +29,36 @@
  
      // createGame - creates a new Room object and returns the roomCode
      socket.on('createGame', (data) => {
-         console.log(data);
          let user = data;
-         let room = new Room(data.id);                              // create new Room
-         room.playerManager.addPlayer(user);                         // add self to Room's playerlist
+         let room = new Room(data._id);                              // create new Room
+         room.playerManager.addPlayer(user); 
+         console.log(user);                        // add self to Room's playerlist
          room.playerManager.getPlayer(user._id).roomCreator = true;
-         roomCollection.push(room);           
+         roomCollection.push(room);      
+         console.log("------------------------------------------------------------");         
          console.log("created new room", room);                       // push room to DB (temporary array)
-         socket.emit('roomCode', room.roomCode);                     // send roomCode to user
+         console.log(room.playerManager.playerList);
+         console.log("------------------------------------------------------------");     
+         socket.emit('roomCode', room.roomCode);    // send code back to user               
+         socket.join(room.roomCode);   // Join Room
+         sendPlayerList(room)
      });
  
      // joinGame - join room using gameCode
-     socket.on('joinGame', (code) => {
-         console.log('joinGame: ' + code);
-         let room = roomCollection.find(({ roomCode }) => roomCode === code);
+     socket.on('joinGame', (data) => {
+         const code = data.roomCode;
+         const user = data.user;
+         let room = roomCollection.find(({ roomCode }) => roomCode === code);   
+
          if (room) {
-             if (room.gameManager.gameActive === false) {
+            console.log(room.gameManager.state);
+             if (room.gameManager.state === 1) {
+                console.log("joining room")
                  // accept join room request
-                 room.playerManager.addPlayer(socket.request.user);                  // add self to Room's playerlist
-                 socket.emit('roomCode', room.roomCode);                             // send roomCode to user
-                 io.to(room.roomCode).emit('playerListUpdate', room.userlist);       // notify subscribers
+                 socket.join(code);
+                 room.playerManager.addPlayer(user);                  // add self to Room's playerlist
+                 socket.emit('roomCode', room.roomCode);                             // send roomCode to user   // notify subscribers
+                 sendPlayerList(room);
              } else {
                  // unable to join because game is in progress
                  socket.emit('roomCode', room.roomCode);                             // send roomCode to user
@@ -77,19 +87,7 @@
      });
  
      // ***** PLAYERLIST COMPONENT ******************************************* //
- 
-     // initialize playerlist component when user enters room
-     socket.on('playerListInit', (gameCode) => {
-         console.log('playerListInit: ' + gameCode + ':' + socket.request.user.username);
-         let room = roomCollection.find(({ roomCode }) => roomCode === gameCode);
-         if(room.gameManager.gameActive){
-             let player = room.playerManager.getPlayer(socket.request.user._id);
-             player.gameReady = true;
-         }
-         socket.join(room.roomCode);
-         sendPlayerList(room);
-     });
- 
+
      // toggle player's game ready state
      socket.on('playerListReady', (gameCode) => {
          console.log('playerListReady: ' + gameCode + ':' + socket.request.user.username);
@@ -113,25 +111,14 @@
  
      // standardized playerlist-component reply
      function sendPlayerList(room) {
-         console.log('sendPlayerList: ' + room.gameManager.state + ':');
-         console.log(JSON.stringify(room.playerManager.playerList, null, 1));    // DEBUG PRINTING
-         io.in(room.roomCode).emit('playerListUpdate', {
-             gameState: room.gameManager.state,
-             playerList: room.playerManager.playerList,
-         });
+        // console.log('sendPlayerList: ' + room.gameManager.state + ':');
+         //console.log(JSON.stringify(room.playerManager.playerList, null, 1));    // DEBUG PRINTING
+         console.log("sending player list update", room.playerManager.playerList);
+         io.in(room.roomCode).emit('playerListUpdate', room.playerManager.playerList);
      }
  
  
-     // ***** CHAT COMPONENT ************************************************* //
- 
-     // initialize chat component when user enters room
-     socket.on('chatComponentInit', (code) => {
-         console.log('chatComponentInit');
-         let room = roomCollection.find(({ roomCode }) => roomCode === code);
-         socket.join(room.roomCode);
-         sendChatComponent(room);
-     });
- 
+
      // player sends new message
      socket.on('newMessage', (code, data) => {
          console.log('newMessage');
@@ -150,16 +137,7 @@
      }
  
  
-     // ***** GAME COMPONENT ************************************************* //
- 
-     // initialize game component when user enters room
-     socket.on('gameInit', (gameCode) => {
-         console.log('gameInit: ' + socket.request.user.username + ':' + gameCode);
-         let room = roomCollection.find(({ roomCode }) => roomCode === gameCode);
-         socket.join(room.roomCode);
-         sendGameUpdate(room);
-     });
- 
+
 
 
  
@@ -167,16 +145,17 @@
 
 
  
- 
-
+     // Player starts the game
+     socket.on('startGame', (code) => {
+        let room = roomCollection.find(({ roomCode }) => roomCode === code);
+        room.gameManager.startGame();
+        sendGameUpdate(room);
+    });
  
      // standardized game-component reply
      function sendGameUpdate(room) {
-         console.log('sendGame: ' + room.gameManager.state);
-         io.in(room.roomCode).emit('gameUpdate', {
-             gameState: room.gameManager.state,
-             playerList: room.playerManager.playerList,
-         });
+         console.log('sendGame: ' + room.gameManager.getState());
+         io.in(room.roomCode).emit('gameUpdate', room.gameManager.getState());
      }
  
  
