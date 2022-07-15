@@ -18,7 +18,7 @@ const GAME_STATE_END = 3;
          this.started = false;
          this.rounds = 3;
          this.currentRound = 1;
-         this.currentDrawer = ""; 
+         this.currentDrawer = "none"; 
          this.currentDrawerIndex = 0;
          this.word = "";
      }
@@ -28,26 +28,29 @@ const GAME_STATE_END = 3;
         this.currentDrawer = this.playerManager.playerList[this.currentDrawerIndex].username;
      }
 
-     nextRound() {
-        this.currentDrawer = this.getNextDrawer();
-     }
 
-     getNextDrawer(){
-        if(this.currentDrawerIndex < this.playerManager.getPlayerCount()){
+
+     nextGameState(){
+        if(this.currentDrawerIndex < this.playerManager.getPlayerCount() - 1){
             this.currentDrawerIndex = ++this.currentDrawerIndex;
         } else {
-            this.currentDrawerIndex = 0;
+            if(this.currentRound < this.rounds){
+                this.currentRound = ++this.currentRound;
+                this.currentDrawerIndex = 0;
+            } else {
+                this.state = GAME_STATE_END;
+            }
         }
-        return this.playerManager.playerList[this.currentDrawerIndex].username;
-
+        console.log(this.currentDrawerIndex);
+        this.currentDrawer = this.playerManager.playerList[this.currentDrawerIndex].username;
      }
  
 
 
      getState(){
          return {
-            state: this.gameActive,
-            currentDrawer: this.currentPlayer,
+            state: this.state,
+            currentDrawer: this.currentDrawer,
             currentRound: this.currentRound,
             numberOfRounds: this.rounds,
 

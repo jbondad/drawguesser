@@ -48,9 +48,6 @@ export default function HomePage() {
     navigate('/GamePage');
   }
 
-  useEffect(() => {
-    console.log(user.username);
-  }, [user]);
   return (
     <Container maxWidth='lg'>
       <Paper

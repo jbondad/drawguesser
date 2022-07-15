@@ -12,7 +12,6 @@ import PrivateRoute from './PrivateRoute/privateRoute';
 import HomePage from './views/HomePage';
 import GamePage from './views/GamePage';
 
-import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const customTheme = createTheme({
@@ -35,11 +34,9 @@ function App() {
 
   function initializeActiveUser() {
     const activeUser = localStorage.getItem('user') !== null;
-    console.log(activeUser);
 
     if (activeUser) {
       const userObject = JSON.parse(localStorage.getItem('user'));
-      console.log(userObject);
       dispatch(login(userObject));
     }
   }
@@ -76,7 +73,6 @@ function App() {
           />
         </Routes>
       </BrowserRouter>
-      <ToastContainer />
     </ThemeProvider>
   );
 }

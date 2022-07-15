@@ -41,7 +41,8 @@
          console.log("------------------------------------------------------------");     
          socket.emit('roomCode', room.roomCode);    // send code back to user               
          socket.join(room.roomCode);   // Join Room
-         sendPlayerList(room)
+         sendPlayerList(room);
+         sendGameUpdate(room);
      });
  
      // joinGame - join room using gameCode
@@ -136,7 +137,12 @@
          });
      }
  
- 
+     
+     socket.on('nextDrawer', (code) => {
+        let room = roomCollection.find(({ roomCode }) => roomCode === code);
+        room.gameManager.nextGameState();
+        sendGameUpdate(room);
+     });
 
 
 

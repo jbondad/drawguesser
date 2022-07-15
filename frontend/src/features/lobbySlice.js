@@ -4,7 +4,12 @@ const initialState = {
     roomCode: "",
     playerList: [],
     messageList: [],
-    gameState: "lobby",
+    game: {
+      state: 1,
+      currentDrawer: "",
+      currentRound: 1,
+      numberOfRounds: 3,
+    },
 };
 
 const lobbySlice = createSlice({
@@ -19,11 +24,19 @@ const lobbySlice = createSlice({
         const playerList = action.payload;
         state.playerList = playerList;
       },
+    setGame: (state, action) => {
+      const game = action.payload;
+      state.game = game;
+    },
+    setMessages: (state, action) => {
+      const messages = action.payload;
+      state.messageList = messages;
+    }
 
 
   },
 });
 
-export const { setRoomCode, setPlayerList } = lobbySlice.actions;
+export const { setRoomCode, setPlayerList, setGame } = lobbySlice.actions;
 export default lobbySlice.reducer;
 
