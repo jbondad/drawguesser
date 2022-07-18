@@ -23,6 +23,8 @@
  
  exports.socketapp = function (io, socket) {
 
+    let interval;
+
      // ********************************************************************** //
      // ***** ACCOUNT PAGE *************************************************** //
      // ********************************************************************** //
@@ -32,13 +34,8 @@
          let user = data;
          let room = new Room(data._id);                              // create new Room
          room.playerManager.addPlayer(user); 
-         console.log(user);                        // add self to Room's playerlist
          room.playerManager.getPlayer(user._id).roomCreator = true;
          roomCollection.push(room);      
-         console.log("------------------------------------------------------------");         
-         console.log("created new room", room);                       // push room to DB (temporary array)
-         console.log(room.playerManager.playerList);
-         console.log("------------------------------------------------------------");     
          socket.emit('roomCode', room.roomCode);    // send code back to user               
          socket.join(room.roomCode);   // Join Room
          sendPlayerList(room);
@@ -52,9 +49,7 @@
          let room = roomCollection.find(({ roomCode }) => roomCode === code);   
 
          if (room) {
-            console.log(room.gameManager.state);
              if (room.gameManager.state === 1) {
-                console.log("joining room")
                  // accept join room request
                  socket.join(code);
                  room.playerManager.addPlayer(user);                  // add self to Room's playerlist
@@ -87,17 +82,7 @@
         //  }
      });
  
-     // ***** PLAYERLIST COMPONENT ******************************************* //
 
-     // toggle player's game ready state
-     socket.on('playerListReady', (gameCode) => {
-         console.log('playerListReady: ' + gameCode + ':' + socket.request.user.username);
-         let room = roomCollection.find(({ roomCode }) => roomCode === gameCode);
-         let toggle = room.playerManager.getPlayer(socket.request.user._id).gameReady
-         room.playerManager.getPlayer(socket.request.user._id).gameReady = !toggle;
-         sendPlayerList(room);
-     });
- 
      // room's creator starts game
      socket.on('playerListStart', (gameCode) => {
          let room = roomCollection.find(({ roomCode }) => roomCode === gameCode);
@@ -121,28 +106,49 @@
  
 
      // player sends new message
-     socket.on('newMessage', (code, data) => {
-         console.log('newMessage');
+     socket.on('newMessage', (data) => {
+         const code = data.code
          let room = roomCollection.find(({ roomCode }) => roomCode === code);
-         let player = room.playerManager.getPlayer(socket.request.user._id);
-         room.chatManager.newMessage(player, data);
-         sendChatComponent(room);
+         let player = room.playerManager.getPlayer(data._id);
+         let correct = room.gameManager.makeGuess(data.message, player);
+         if(correct) {
+            room.chatManager.newServerMessage( player.username + " has guessed the word!")
+         }
+         if(room.gameManager.checkCorrectGuesses()){
+            room.chatManager.newServerMessage( "The word was " + room.gameManager.word)
+            room.gameManager.nextGameState();
+            clearInterval(interval);
+            sendGameUpdate(room);
+         }
+         room.chatManager.newMessage(player.username, data.message, correct);
+         sendMessageList(room);
+         sendPlayerList(room);
      });
  
      // standardized chat-component reply
-     function sendChatComponent(room) {
-         io.in(room.roomCode).emit('messageUpdate', {
-             messageList: room.chatManager.messageList,
-             playerList: room.playerManager.playerList
-         });
+     function sendMessageList(room) {
+         io.in(room.roomCode).emit('messageUpdate', room.chatManager.messageList,
+         );
      }
- 
      
-     socket.on('nextDrawer', (code) => {
+ 
+
+     socket.on('wordChosen', (data) => {
+        const { code, word } = data;
         let room = roomCollection.find(({ roomCode }) => roomCode === code);
-        room.gameManager.nextGameState();
+        room.gameManager.chooseWord(word);
+        io.in(room.roomCode).emit('clearDrawing');
+        room.chatManager.newServerMessage(room.gameManager.currentDrawer + " is drawing now!")
+        runTimer(code);
         sendGameUpdate(room);
+        sendMessageList(room)
+
      });
+     
+
+     socket.on('draw', ({code, line}) =>{
+        socket.to(code).emit('drawLine', line);
+      });
 
 
 
@@ -153,15 +159,34 @@
  
      // Player starts the game
      socket.on('startGame', (code) => {
+        console.log("start game called");
         let room = roomCollection.find(({ roomCode }) => roomCode === code);
         room.gameManager.startGame();
+        room.chatManager.newServerMessage(room.gameManager.currentDrawer + " is choosing a word!")
+        sendMessageList(room);
         sendGameUpdate(room);
     });
  
      // standardized game-component reply
      function sendGameUpdate(room) {
-         console.log('sendGame: ' + room.gameManager.getState());
+         console.log('sendGame Update: ' + JSON.stringify(room.gameManager.getState()));
          io.in(room.roomCode).emit('gameUpdate', room.gameManager.getState());
+     }
+
+     function runTimer(code) {
+        let counter = 60
+        let room = roomCollection.find(({ roomCode }) => roomCode === code);
+        interval = setInterval(() => {
+
+            io.in(code).emit('timer', counter)
+            if(counter === 0) {
+                clearInterval(interval);
+                room.gameManager.nextGameState();
+                room.chatManager.newServerMessage( "The word was " + room.gameManager.word)
+                sendGameUpdate(room);
+            }
+            counter--;
+        }, 1000)
      }
  
  

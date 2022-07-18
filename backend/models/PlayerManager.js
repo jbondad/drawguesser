@@ -34,21 +34,18 @@
          }
          return null;
      }
+
+     getWinner(){
+        let winner = this.playerList.reduce((max, player) => max.score > player.votes ? max : player);
+        return winner;
+     }
  
-     playersReady() {
+     resetScores() {
          let players = this.playerList;
-         // not enough players
-         if (players.length < 5) {
-             return false;
-         }
-         // else, check if everyone else is ready
-         let allReady = true;
+
          for (let i = 0; i < players.length; i++) {
-             if (players[i].gameReady === false) {
-                 allReady = false;
-             }
+             players[i].score = 0
          }
-         return allReady;
      }
  
      printList() {

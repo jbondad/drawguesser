@@ -6,13 +6,13 @@ import {
   Button,
   TextField,
   FormGroup,
-} from '@mui/material';
-import React, { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { logout } from '../features/authSlice';
-import profilePic from '../images/profilePic.jpg';
-import socket from '../socket/socket';
+} from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { logout } from "../features/authSlice";
+import profilePic from "../images/profilePic.jpg";
+import socket from "../socket/socket";
 
 export default function HomePage() {
   const user = useSelector((state) => state.auth.user);
@@ -24,68 +24,71 @@ export default function HomePage() {
   function handleLogout() {
     localStorage.clear();
     dispatch(logout());
-    navigate('/Login');
+    navigate("/Login");
   }
 
-  function createGame() 
-  { 
+  function createGame() {
     console.log("creating game");
     const userInfo = {
       _id: user.id,
       username: user.username,
-    }
-    socket.emit('createGame', userInfo);
-    navigate('/GamePage');
+    };
+    socket.emit("createGame", userInfo);
+    navigate("/Lobby");
   }
-
 
   function joinGame() {
     const userInfo = {
       _id: user.id,
       username: user.username,
-    }
-    socket.emit("joinGame", {user: userInfo, roomCode: gameCode});
-    navigate('/GamePage');
+    };
+    socket.emit("joinGame", { user: userInfo, roomCode: gameCode });
+    navigate("/Lobby");
   }
 
   return (
-    <Container maxWidth='lg'>
+    <Container maxWidth="lg">
       <Paper
         sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: '40px',
-          padding: '40px 40px',
-          outline: 'black solid 1px',
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: "40px",
+          padding: "40px 40px",
+          outline: "black solid 1px",
           width: 1100,
           height: 600,
-          margin: '20px auto',
+          margin: "20px auto",
         }}
       >
-        <Typography variant='h4'>{user.username}</Typography>
+        <Typography variant="h4">{user.username}</Typography>
         <div>
-          <img src={profilePic} width='150' height='150' />
+          <img src={profilePic} width="150" height="150" />
         </div>
         <Box
           sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            gap: '3em',
-            width: '500px',
+            display: "flex",
+            justifyContent: "center",
+            gap: "3em",
+            width: "500px",
           }}
         >
-          <Button type='submit' variant='outlined' color='primary' onClick={()=>createGame()}>
+          <Button
+            type="submit"
+            variant="outlined"
+            color="primary"
+            onClick={() => createGame()}
+          >
             Create Game
           </Button>
 
-          <Button type='submit' variant='outlined' color='primary'>
+          <Button type="submit" variant="outlined" color="primary">
             View Leaderboard
           </Button>
           <Button
-            type='submit'
-            variant='outlined'
-            color='error'
+            type="submit"
+            variant="outlined"
+            color="error"
             onClick={handleLogout}
           >
             Logout
@@ -94,14 +97,18 @@ export default function HomePage() {
         <div>
           <FormGroup row>
             <TextField
-              size='small'
-              autoComplete='off'
-              variant='outlined'
+              size="small"
+              autoComplete="off"
+              variant="outlined"
               value={gameCode}
-              onChange={e => setGameCode(e.target.value)}
-              placeholder='ENTER CODE'
+              onChange={(e) => setGameCode(e.target.value)}
+              placeholder="ENTER CODE"
             />
-            <Button onClick={()=>joinGame()} variant='contained' disableElevation>
+            <Button
+              onClick={() => joinGame()}
+              variant="contained"
+              disableElevation
+            >
               JOIN GAME
             </Button>
           </FormGroup>

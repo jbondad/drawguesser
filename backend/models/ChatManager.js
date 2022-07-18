@@ -12,26 +12,25 @@
      }
  
      // creates a new message object with player object's _id.
-     newMessage(player, message) {
-         this.messageList.push(new Message(player._id, message));
+     newMessage(username, message, correctGuess) {
+         this.messageList.push(new Message(username, message, correctGuess));
      }
  
      // server custom message - messages sent from the server to the room
      newServerMessage(message) {
-         this.messageList.push(new Message(1, message));
+         this.messageList.push(new Message('SERVER', message, false));
      }
  
      // admin custom message - messages sent from admin to the room
      newAdminMessage(message) {
-         this.messageList.push(new Message(2, message));
+         this.messageList.push(new Message(2, message, false));
      }
  }
  
  class Message {
-     constructor(_id, message) {
-         this._mid = uuid.v4();          // Message object's unique id
-         this._id = _id;                 // sender's user id 
+     constructor(username, message, correctGuess) {
+         this.username = username;
          this.message = message;
-         this.timestamp = Date.now();
+         this.correctGuess = correctGuess;
      }
  }

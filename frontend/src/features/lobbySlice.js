@@ -1,19 +1,22 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-    roomCode: "",
-    playerList: [],
-    messageList: [],
-    game: {
-      state: 1,
-      currentDrawer: "",
-      currentRound: 1,
-      numberOfRounds: 3,
+  roomCode: "",
+  host: "",
+  playerList: [],
+  messageList: [],
+  game: {
+    state: 1,
+    currentDrawer: "",
+    currentRound: 1,
+    numberOfRounds: 3,
+    word: "",
+    winner: "",
     },
 };
 
 const lobbySlice = createSlice({
-  name: 'lobby',
+  name: "lobby",
   initialState,
   reducers: {
     setRoomCode: (state, action) => {
@@ -21,9 +24,9 @@ const lobbySlice = createSlice({
       state.roomCode = code;
     },
     setPlayerList: (state, action) => {
-        const playerList = action.payload;
-        state.playerList = playerList;
-      },
+      const playerList = action.payload;
+      state.playerList = playerList;
+    },
     setGame: (state, action) => {
       const game = action.payload;
       state.game = game;
@@ -31,12 +34,14 @@ const lobbySlice = createSlice({
     setMessages: (state, action) => {
       const messages = action.payload;
       state.messageList = messages;
+    },
+    setHost: (state, action) => {
+      const host = action.payload;
+      state.host = host;
     }
-
-
   },
 });
 
-export const { setRoomCode, setPlayerList, setGame } = lobbySlice.actions;
+export const { setRoomCode, setPlayerList, setGame, setMessages, setHost } =
+  lobbySlice.actions;
 export default lobbySlice.reducer;
-
