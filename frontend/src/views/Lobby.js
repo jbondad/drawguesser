@@ -33,12 +33,10 @@ export default function Lobby() {
     const navigate = useNavigate();
 
     function isHost(){
-        return lobby.host === user.username;
+        return lobby.host === user.id;
       }
 
     useEffect(() => {
-        
-
         socket.on("roomCode", (data) => {
           dispatch(setRoomCode(data));
         });
@@ -46,10 +44,22 @@ export default function Lobby() {
         socket.on("host", (data) => {
           dispatch(setHost(data));
         });
+
+        socket.on("startedGame", () => {
+            navigate("/GamePage");
+        });
     
         socket.on("playerListUpdate", (data) => {
           dispatch(setPlayerList(data));
         });
+
+        socket.on("messageUpdate", (data) => {
+            dispatch(setMessages(data));
+          });
+
+        socket.on("gameUpdate", (data) => {
+        dispatch(setGame(data));
+        }); 
       }, []);
 
 
@@ -81,7 +91,7 @@ export default function Lobby() {
               gap: "40px",
               padding: "40px 40px",
               outline: "black solid 1px",
-              width: 600,
+              width: 500,
               height: 600,
               margin: "20px auto",
             }}
@@ -92,12 +102,7 @@ export default function Lobby() {
             </div>
             <Box sx={{flexGrow:1}}>
                 {renderUsers()}
-
             </Box>
-            <Box>
-                ROOM CODE: {lobby.roomCode}
-            </Box>
-    
           </Paper>
 
           <Paper
@@ -119,7 +124,7 @@ export default function Lobby() {
             <Typography>
                 Waiting for host to start...
             </Typography>
-            { isHost && <Button
+            { isHost() && <Button
                 type="submit"
                 variant="contained"
                 color="success"

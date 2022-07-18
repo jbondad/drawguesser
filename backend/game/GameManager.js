@@ -26,6 +26,7 @@ const GAME_STATE_END = 5;
          this.currentDrawerIndex = 0;
          this.word = "";
          this.winner = "";
+         this.interval = null;
      }
 
      startGame() {
@@ -42,7 +43,7 @@ const GAME_STATE_END = 5;
      }
 
      makeGuess(guess, player){
-        if(this.state === GAME_STATE_DRAWING){
+        if(this.state === GAME_STATE_DRAWING && player.username != this.currentDrawer){
             if(guess.toLowerCase() == this.word.toLowerCase() && !this.guessedPlayers.has(player._id)){
                 player.score = player.score + 100;
                 this.guessedPlayers.add(player._id);
@@ -56,7 +57,7 @@ const GAME_STATE_END = 5;
       }
       
      checkCorrectGuesses(){
-        if(this.correctGuesses == this.playerManager.getPlayerCount()){
+        if(this.correctGuesses == this.playerManager.getPlayerCount() - 1){
             return true;
         }
         return false;
@@ -97,6 +98,7 @@ const GAME_STATE_END = 5;
          }
      }
  
+
 
  
  

@@ -67,30 +67,8 @@ export default function GamePage() {
     });
   }, []);
 
-  function isHost(){
-    return lobby.host === user.username;
-  }
-  function renderGameStatus() {
-    if (game.state === state.GAME_STATE_WAITING) {
-      return "WAITING FOR HOST TO START";
-    } else if (game.state === state.GAME_STATE_CHOOSING_WORD){
-      return game.currentDrawer + " is choosing a word";
-    }
-      else if (game.state === state.GAME_STATE_DRAWING) {
-      return game.currentDrawer + " is drawing";
-    } else {
-      return "GAME OVER";
-    }
-  }
-  
 
-  function handleGameStart() {
-    socket.emit("startGame", lobby.roomCode);
-  }
 
-  function handleNextDrawer() {
-    socket.emit("nextDrawer", lobby.roomCode);
-  }
 
   function renderWordOptions() {
     return (<Backdrop sx={{
@@ -143,7 +121,7 @@ export default function GamePage() {
       }}>
       <Typography variant="h4" sx={{color:'white', textShadow: '0 0 2px black, 0 0 2px black, 0 0 2px black, 0 0 2px black'}}>
         Gameover {game.winner} has won!</Typography>
-        <Button variant="contained" onClick={() => handleGameStart()}>
+        <Button variant="contained">
             Go back to home page
           </Button>
       </Box>
@@ -231,11 +209,17 @@ export default function GamePage() {
           flexDirection: 'column',
         }}
       >
-        <Typography sx={{
+        <Box sx={{
           flexGrow: 2,
+          display: 'flex',
+          alignItems: 'center',
+          padding: 0,
+          margin: 0,
         }}>
-          Doodle ROOM CODE: {lobby.roomCode}         GAME STATUS: {renderGameStatus()} <br />
+        <Typography variant="h3">
+          DrawGuesser
         </Typography>
+        </Box>
         <Box sx={{
           flexGrow: 1.3,
           display: 'flex',
@@ -309,9 +293,7 @@ export default function GamePage() {
 
           </Box>
           
-          <Button variant="outlined" onClick={() => handleGameStart()}>
-            START GAME
-          </Button>
+
         </Box>
         <Box
           sx={{

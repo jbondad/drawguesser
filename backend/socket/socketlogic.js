@@ -10,20 +10,8 @@
 
  
  let roomCollection = [];    // TODO: Save to database for persistence
- 
- exports.dataGet = function getRoomCollection() {
-     return roomCollection;
- }
- 
- exports.dataSet = function setRoomCollection(data) {
-     for(let i = 0; i < data.length; i++){
-         roomCollection.push(data[i]);
-     }
- }
- 
  exports.socketapp = function (io, socket) {
 
-    let interval;
 
      // ********************************************************************** //
      // ***** ACCOUNT PAGE *************************************************** //
@@ -36,7 +24,8 @@
          room.playerManager.addPlayer(user); 
          room.playerManager.getPlayer(user._id).roomCreator = true;
          roomCollection.push(room);      
-         socket.emit('roomCode', room.roomCode);    // send code back to user               
+         socket.emit('roomCode', room.roomCode);    // send code back to user       
+         socket.emit('host', room.creatorID);        
          socket.join(room.roomCode);   // Join Room
          sendPlayerList(room);
          sendGameUpdate(room);
@@ -54,6 +43,7 @@
                  socket.join(code);
                  room.playerManager.addPlayer(user);                  // add self to Room's playerlist
                  socket.emit('roomCode', room.roomCode);                             // send roomCode to user   // notify subscribers
+                 socket.emit('host', room.creatorID);     
                  sendPlayerList(room);
              } else {
                  // unable to join because game is in progress
@@ -116,8 +106,9 @@
          }
          if(room.gameManager.checkCorrectGuesses()){
             room.chatManager.newServerMessage( "The word was " + room.gameManager.word)
+            console.log("clear interval")
             room.gameManager.nextGameState();
-            clearInterval(interval);
+            clearInterval(room.gameManager.interval);
             sendGameUpdate(room);
          }
          room.chatManager.newMessage(player.username, data.message, correct);
@@ -149,17 +140,10 @@
      socket.on('draw', ({code, line}) =>{
         socket.to(code).emit('drawLine', line);
       });
-
-
-
- 
-
-
-
  
      // Player starts the game
      socket.on('startGame', (code) => {
-        console.log("start game called");
+        socket.to(code).emit("startedGame");
         let room = roomCollection.find(({ roomCode }) => roomCode === code);
         room.gameManager.startGame();
         room.chatManager.newServerMessage(room.gameManager.currentDrawer + " is choosing a word!")
@@ -174,15 +158,16 @@
      }
 
      function runTimer(code) {
-        let counter = 60
+        let counter = 10;
         let room = roomCollection.find(({ roomCode }) => roomCode === code);
-        interval = setInterval(() => {
+        room.gameManager.interval = setInterval(() => {
 
             io.in(code).emit('timer', counter)
             if(counter === 0) {
-                clearInterval(interval);
+                clearInterval(room.gameManager.interval);
                 room.gameManager.nextGameState();
                 room.chatManager.newServerMessage( "The word was " + room.gameManager.word)
+                sendMessageList(room);
                 sendGameUpdate(room);
             }
             counter--;
