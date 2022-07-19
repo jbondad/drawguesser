@@ -127,13 +127,13 @@ export default function GamePage() {
               }}
             >
               <button onClick={(e) => chooseWord(e.target.innerHTML)}>
-                Hotdog
+                {game.wordOptions[0]}
               </button>
               <button onClick={(e) => chooseWord(e.target.innerHTML)}>
-                Computer
+              {game.wordOptions[1]}
               </button>
               <button onClick={(e) => chooseWord(e.target.innerHTML)}>
-                Running
+              {game.wordOptions[2]}
               </button>
             </Box>
           </Box>
