@@ -3,23 +3,21 @@ import { useEffect, useState, useRef } from "react";
 import socket from "../socket/socket";
 import { useSelector } from "react-redux";
 
-export default function Canvas() {
+export default function Canvas({ color, strokeWidth }) {
   const canvasRef = useRef(null); // useRef is a hook that creates a reference to the dom element.
   const contextRef = useRef(null); // al can be used to preserve information between rerenders
   const [isDrawing, setIsDrawing] = useState(false);
-  const currentDrawer= useSelector((state) => state.lobby.game.currentDrawer);
+  const currentDrawer = useSelector((state) => state.lobby.game.currentDrawer);
   const code = useSelector((state) => state.lobby.roomCode);
   const username = useSelector((state) => state.auth.user.username);
 
   useEffect(() => {
     if (contextRef) {
       socket.on("drawLine", (line) => {
-        draw(line.x, line.y, line.state);
+        draw(line.x, line.y, line.state, line.color);
       });
     }
   }, [contextRef]);
-
-
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -34,19 +32,17 @@ export default function Canvas() {
     const context = canvas.getContext("2d");
     context.scale(2, 2);
     context.lineCap = "round"; // lines will have round endinges
-    context.strokeStyle = "black"; // color
-    context.lineWidth = 5;
+    context.lineWidth = 4;
     contextRef.current = context;
 
-
-    socket.on("clearDrawing", () =>{
-
+    socket.on("clearDrawing", () => {
       clearCanvas();
-    })
+    });
   }, []);
 
-  const draw = (x, y, state) => {
+  const draw = (x, y, state, color) => {
     if (state === "startDrawing") {
+      contextRef.current.strokeStyle = color;
       contextRef.current.beginPath();
       contextRef.current.moveTo(x, y);
     } else if (state === "drawing") {
@@ -58,27 +54,27 @@ export default function Canvas() {
   };
 
   const handleMouseDown = ({ nativeEvent }) => {
-    if(username == currentDrawer) {
+    if (username == currentDrawer) {
       const { offsetX, offsetY } = nativeEvent;
-      draw(offsetX, offsetY, "startDrawing");
+      draw(offsetX, offsetY, "startDrawing", color);
       setIsDrawing(true);
-      emitDrawingData({ x: offsetX, y: offsetY, state: "startDrawing" })
+      emitDrawingData({ x: offsetX, y: offsetY, state: "startDrawing", color });
     }
   };
 
-  function emitDrawingData(data){
-    socket.emit("draw", {code: code, line: data});
+  function emitDrawingData(data) {
+    socket.emit("draw", { code: code, line: data });
   }
 
   const handleMouseUp = ({ nativeEvent }) => {
     const { offsetX, offsetY } = nativeEvent;
-    draw(offsetX, offsetY, "endDrawing");
+    draw(offsetX, offsetY, "endDrawing", color);
     setIsDrawing(false);
-    emitDrawingData({ x: offsetX, y: offsetY, state: "endDrawing" })
+    emitDrawingData({ x: offsetX, y: offsetY, state: "endDrawing", color });
   };
 
   const clearCanvas = () => {
-    console.log('clearing', canvasRef.current.height);
+    console.log("clearing", canvasRef.current.height);
     contextRef.current.clearRect(
       0,
       0,
@@ -92,8 +88,8 @@ export default function Canvas() {
     if (!isDrawing) {
       return;
     }
-    draw(offsetX, offsetY, "drawing");
-    emitDrawingData({ x: offsetX, y: offsetY, state: "drawing" });
+    draw(offsetX, offsetY, "drawing", color);
+    emitDrawingData({ x: offsetX, y: offsetY, state: "drawing", color });
   };
 
   const handleMouseLeave = () => {
@@ -103,13 +99,13 @@ export default function Canvas() {
 
   return (
     <>
-    <canvas
-      onMouseDown={handleMouseDown}
-      onMouseUp={handleMouseUp}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      ref={canvasRef}
-    />
+      <canvas
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        ref={canvasRef}
+      />
     </>
   );
 }

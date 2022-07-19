@@ -12,7 +12,7 @@ const initialState = {
     numberOfRounds: 3,
     word: "",
     winner: "",
-    },
+  },
 };
 
 const lobbySlice = createSlice({
@@ -38,7 +38,7 @@ const lobbySlice = createSlice({
     setHost: (state, action) => {
       const host = action.payload;
       state.host = host;
-    }
+    },
   },
 });
 

@@ -72,7 +72,7 @@ function App() {
               </PrivateRoute>
             }
           />
-                    <Route
+          <Route
             path="/Lobby"
             element={
               <PrivateRoute>

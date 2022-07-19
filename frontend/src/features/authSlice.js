@@ -18,7 +18,7 @@ const authSlice = createSlice({
         state.user = null;
         return;
       }
-      console.log('setting user', user);
+      console.log("setting user", user);
       state.user = user;
     },
 
