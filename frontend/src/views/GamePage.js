@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef} from "react";
 import socket from "../socket/socket";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -37,6 +37,7 @@ export default function GamePage() {
   const game = useSelector((state) => state.lobby.game);
   const messageList = useSelector((state) => state.lobby.messageList);
   const user = useSelector((state) => state.auth.user);
+  const messagesEndRef = useRef(null);
   const [time, setTime] = useState("-");
   const [strokeColor, setStrokeColor] = useState("#000000");
   const [strokeWidth, setStrokeWidth] = useState(4);
@@ -56,6 +57,9 @@ export default function GamePage() {
   const [showBackdrop, setShowBackdrop] = useState(false);
 
   const [message, setMessage] = useState("");
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }
 
   useEffect(() => {
     if (
@@ -85,6 +89,8 @@ export default function GamePage() {
     socket.on("messageUpdate", (data) => {
       console.log("message update", data);
       dispatch(setMessages(data));
+      scrollToBottom();
+
     });
 
     socket.on("timer", (counter) => {
@@ -430,6 +436,7 @@ background: "white",
               }}
             >
               {renderMessages()}
+              <div ref={messagesEndRef} />
             </List>
           </Box>
 
