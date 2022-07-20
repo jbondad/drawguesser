@@ -1,8 +1,3 @@
-# drawguesser
-Multiplayer drawing and guessing game.
-
-
-
 <!-- ABOUT THE PROJECT -->
 ## Draw Guesser
 
