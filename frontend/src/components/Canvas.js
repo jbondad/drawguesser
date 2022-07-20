@@ -3,9 +3,9 @@ import { useEffect, useState, useRef } from "react";
 import socket from "../socket/socket";
 import { useSelector } from "react-redux";
 
-export default function Canvas({ color, strokeWidth }) {
-  const canvasRef = useRef(null); // useRef is a hook that creates a reference to the dom element.
-  const contextRef = useRef(null); // al can be used to preserve information between rerenders
+export default function Canvas({ color, strokeWidth }) { // todo: change stroke width
+  const canvasRef = useRef(null); 
+  const contextRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const currentDrawer = useSelector((state) => state.lobby.game.currentDrawer);
   const code = useSelector((state) => state.lobby.roomCode);
@@ -31,7 +31,7 @@ export default function Canvas({ color, strokeWidth }) {
 
     const context = canvas.getContext("2d");
     context.scale(2, 2);
-    context.lineCap = "round"; // lines will have round endinges
+    context.lineCap = "round"; 
     context.lineWidth = 4;
     contextRef.current = context;
 
@@ -84,7 +84,7 @@ export default function Canvas({ color, strokeWidth }) {
   };
 
   const handleMouseMove = ({ nativeEvent }) => {
-    const { offsetX, offsetY } = nativeEvent; // everytime moouse is moved we draw a line to new coordinate, offsetx and offset y are relative to the parent container
+    const { offsetX, offsetY } = nativeEvent; 
     if (!isDrawing) {
       return;
     }

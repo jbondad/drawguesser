@@ -1,5 +1,4 @@
 import React from "react";
-
 import { Typography, List, ListItem } from "@mui/material";
 import { useSelector } from "react-redux";
 
@@ -8,7 +7,6 @@ export default function Users() {
     const lobby = useSelector((state) => state.lobby);
     const user = useSelector((state) => state.auth.user);
   
-
     function renderUsername(username) {
         if (username == user.username) {
           return username + "(me)";

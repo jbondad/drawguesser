@@ -1,9 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import socket from "../socket/socket";
-
 import { setMessages } from "../features/lobbySlice";
-
 import {
   List,
   ListItemText,

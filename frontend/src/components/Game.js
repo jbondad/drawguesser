@@ -2,14 +2,16 @@ import React, { useEffect, useState } from "react";
 import socket from "../socket/socket";
 import { Box, Button, Backdrop, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import Canvas from "../components/Canvas";
 import { state } from "../constants/gameStates";
 import { TwitterPicker } from "react-color";
 import EraserIcon from "../components/EraserIcon";
+import { reset } from "../features/lobbySlice";
 
 export default function Game() {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const lobby = useSelector((state) => state.lobby);
   const game = useSelector((state) => state.lobby.game);
   const user = useSelector((state) => state.auth.user);
@@ -128,6 +130,10 @@ export default function Game() {
       return renderWordOptions();
     }
   }
+  function backToHomePage() {
+    dispatch(reset());
+    navigate("/HomePage")
+  }
 
   function renderGameOver() {
     return (
@@ -153,9 +159,9 @@ export default function Game() {
                 "0 0 2px black, 0 0 2px black, 0 0 2px black, 0 0 2px black",
             }}
           >
-            Gameover {game.winner} has won!
+            Game Over {game.winner} has won!
           </Typography>
-          <Button variant="contained">Go back to home page</Button>
+          <Button variant="contained" onClick={()=>backToHomePage()}>Go back to home page</Button>
         </Box>
       </Backdrop>
     );

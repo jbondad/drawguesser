@@ -8,7 +8,7 @@
 const Room = require("../models/Room");
 const Words = require("../game/wordList");
 
-let roomCollection = []; // TODO: Save to database for persistence
+let roomCollection = []; 
 exports.socketapp = function (io, socket) {
   // ********************************************************************** //
   // ***** ACCOUNT PAGE *************************************************** //
@@ -162,6 +162,11 @@ exports.socketapp = function (io, socket) {
     sendGameUpdate(room);
   });
 
+  // TODO: handle when user leaves/refreshes page mid game
+  socket.on("leaveLobby", (code)=> {
+
+  })
+
   // standardized game-component reply
   function sendGameUpdate(room) {
     console.log(
@@ -171,7 +176,7 @@ exports.socketapp = function (io, socket) {
   }
 
   function runTimer(code) {
-    let counter = 10;
+    let counter = 60;
     let room = roomCollection.find(({ roomCode }) => roomCode === code);
     room.gameManager.interval = setInterval(() => {
       io.in(code).emit("timer", counter);
