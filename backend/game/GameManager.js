@@ -13,10 +13,9 @@ module.exports = class GameManager {
   constructor(playerManager) {
     this.playerManager = playerManager;
     this.state = GAME_STATE_WAITING;
-    this.guessedPlayers = new Set();
+    this.guessedPlayers = new Set(); // # of players that have correctly guessed the drawing
     this.started = false;
     this.rounds = 3;
-    this.correctGuesses = 0;
     this.currentRound = 1;
     this.currentDrawer = "none";
     this.currentDrawerIndex = 0;
@@ -42,40 +41,45 @@ module.exports = class GameManager {
     this.state = GAME_STATE_DRAWING;
   }
 
-  makeGuess(guess, player) {
-    if (
-      this.state === GAME_STATE_DRAWING &&
-      player.username != this.currentDrawer
-    ) {
-      if (
-        guess.toLowerCase() == this.word.toLowerCase() &&
-        !this.guessedPlayers.has(player._id)
-      ) {
-        player.score = player.score + 100;
-        this.guessedPlayers.add(player._id);
-        this.correctGuesses = this.correctGuesses + 1;
-        this.checkCorrectGuesses();
-        return true;
-      }
+  calculateScore() {
+    return 1000 - (this.guessedPlayers.size * 100);
+  }
+
+  increaseDrawerScore(){
+    this.playerManager.playerList[this.currentDrawerIndex].score = this.playerManager.playerList[this.currentDrawerIndex].score + (100 * this.guessedPlayers.size);
+  }
+
+  increasePlayerScore(player) {
+    player.score = player.score + this.calculateScore();
+    this.guessedPlayers.add(player._id);
+  }
+
+  checkGuess(guess){
+    if(this.word.toLowerCase() == guess.toLowerCase()){
+      return true;
     }
-    return false;
+    else {
+      return false;
+    }
   }
 
   checkCorrectGuesses() {
-    if (this.correctGuesses == this.playerManager.getPlayerCount() - 1) {
+    if (this.guessedPlayers.size === this.playerManager.getPlayerCount() - 1) {
       return true;
     }
     return false;
   }
 
   nextGameState() {
+
+    this.increaseDrawerScore();
     if (this.currentDrawerIndex < this.playerManager.getPlayerCount() - 1) {
+      this.guessedPlayers.clear();
       this.currentDrawerIndex = ++this.currentDrawerIndex;
       this.wordOptions = Words.getWordOptions();
       this.state = GAME_STATE_CHOOSING_WORD;
     } else {
       if (this.currentRound < this.rounds) {
-        this.correctGuesses = 0;
         this.guessedPlayers.clear();
         this.currentRound = ++this.currentRound;
         this.currentDrawerIndex = 0;

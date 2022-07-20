@@ -118,7 +118,7 @@ export default function GamePage() {
                   "0 0 2px black, 0 0 2px black, 0 0 2px black, 0 0 2px black",
               }}
             >
-              Choose a word
+              Choose a word to draw!
             </Typography>
             <Box
               sx={{
@@ -126,15 +126,15 @@ export default function GamePage() {
                 gap: "3em",
               }}
             >
-              <button onClick={(e) => chooseWord(e.target.innerHTML)}>
+              <Button  variant="contained" onClick={(e) => chooseWord(game.wordOptions[0])}>
                 {game.wordOptions[0]}
-              </button>
-              <button onClick={(e) => chooseWord(e.target.innerHTML)}>
+              </Button>
+              <Button variant="contained"  onClick={(e) => chooseWord(game.wordOptions[1])}>
               {game.wordOptions[1]}
-              </button>
-              <button onClick={(e) => chooseWord(e.target.innerHTML)}>
+              </Button>
+              <Button variant="contained"  onClick={(e) => chooseWord(game.wordOptions[2])}>
               {game.wordOptions[2]}
-              </button>
+              </Button>
             </Box>
           </Box>
         ) : (
@@ -197,7 +197,7 @@ export default function GamePage() {
 
   function renderMessages() {
     const listItems = messageList.map((data, index) => {
-      if (!data.correctGuess || data.username === user.username) {
+      if (!data.correctGuess || data.username === user.username || data.username === game.currentDrawer) {
         return (
           <ListItem sx={{ padding: 0, paddingLeft: 1 }} key={index}>
             <ListItemText>
@@ -243,7 +243,7 @@ export default function GamePage() {
   function renderUsername(username) {
     if (username == user.username) {
       return username + "(me)";
-    }
+    } else return username;
   }
 
   function renderCanvasOverlay() {
@@ -293,7 +293,7 @@ export default function GamePage() {
             margin: 0,
           }}
         >
-          <Typography variant="h3">DrawGuesser</Typography>
+          <Typography color="white" variant="h3">Draw Guesser</Typography>
         </Box>
         <Box
           sx={{

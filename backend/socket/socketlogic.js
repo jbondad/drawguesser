@@ -85,7 +85,6 @@ exports.socketapp = function (io, socket) {
   function sendPlayerList(room) {
     // console.log('sendPlayerList: ' + room.gameManager.state + ':');
     //console.log(JSON.stringify(room.playerManager.playerList, null, 1));    // DEBUG PRINTING
-    console.log("sending player list update", room.playerManager.playerList);
     io.in(room.roomCode).emit(
       "playerListUpdate",
       room.playerManager.playerList
@@ -100,29 +99,33 @@ exports.socketapp = function (io, socket) {
 
   // player sends new message
   socket.on("newMessage", (data) => {
-    let test = Words.getWordOptions()
-    console.log(test);
+
     const code = data.code;
     let room = roomCollection.find(({ roomCode }) => roomCode === code);
     let player = room.playerManager.getPlayer(data._id);
-    let correct = room.gameManager.makeGuess(data.message, player);
-    if (correct) {
-      room.chatManager.newServerMessage(
-        player.username + " has guessed the word!"
-      );
+    let correct = room.gameManager.checkGuess(data.message);
+    console.log(data.message, room.gameManager.word, correct)
+    if(room.gameManager.currentDrawer !== player.username){
+      if (correct) {
+        room.chatManager.newServerMessage(
+          player.username + " has guessed the word!"
+        );
+        room.gameManager.increasePlayerScore(player)
+      }
+  
+      if (room.gameManager.checkCorrectGuesses()) {
+        room.chatManager.newServerMessage(
+          "The word was " + room.gameManager.word
+        );
+        room.gameManager.nextGameState();
+        clearInterval(room.gameManager.interval);
+        sendGameUpdate(room);
     }
-    if (room.gameManager.checkCorrectGuesses()) {
-      room.chatManager.newServerMessage(
-        "The word was " + room.gameManager.word
-      );
-      console.log("clear interval");
-      room.gameManager.nextGameState();
-      clearInterval(room.gameManager.interval);
-      sendGameUpdate(room);
+      room.chatManager.newMessage(player.username, data.message, correct);
+      sendMessageList(room);
+      sendPlayerList(room);
     }
-    room.chatManager.newMessage(player.username, data.message, correct);
-    sendMessageList(room);
-    sendPlayerList(room);
+
   });
 
   // standardized chat-component reply
