@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function EraserIcon({size = 30, color = "white"}) {
+export default function EraserIcon({ size = 30, color = "white" }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

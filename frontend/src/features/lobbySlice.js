@@ -11,7 +11,7 @@ const initialState = {
     currentRound: 1,
     numberOfRounds: 3,
     word: "",
-    wordOptions: ["","",""],
+    wordOptions: ["", "", ""],
     winner: "",
   },
 };
