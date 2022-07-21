@@ -41,6 +41,7 @@ exports.socketapp = function (io, socket) {
         room.playerManager.addPlayer(user); // add self to Room's playerlist
         socket.emit("roomCode", room.roomCode); // send roomCode to user   // notify subscribers
         socket.emit("host", room.creatorID);
+        socket.emit("joinSuccess");
         sendPlayerList(room);
       } else {
         // unable to join because game is in progress
@@ -49,7 +50,7 @@ exports.socketapp = function (io, socket) {
       }
     } else {
       // unable to find room
-      socket.emit("accountErrorMessage", "unable to join room");
+      socket.emit("error", "Room does not exist");
     }
   });
 
@@ -152,14 +153,19 @@ exports.socketapp = function (io, socket) {
 
   // Player starts the game
   socket.on("startGame", (code) => {
-    socket.to(code).emit("startedGame");
     let room = roomCollection.find(({ roomCode }) => roomCode === code);
-    room.gameManager.startGame();
-    room.chatManager.newServerMessage(
-      room.gameManager.currentDrawer + " is choosing a word!"
-    );
-    sendMessageList(room);
-    sendGameUpdate(room);
+    if(room.playerManager.getPlayerCount() > 1){
+      socket.to(code).emit("startedGame");
+      room.gameManager.startGame();
+      room.chatManager.newServerMessage(
+        room.gameManager.currentDrawer + " is choosing a word!"
+      );
+      sendMessageList(room);
+      sendGameUpdate(room);
+    } else {
+      socket.emit("error", "Not enough players");
+    }
+
   });
 
   // TODO: handle when user leaves/refreshes page mid game

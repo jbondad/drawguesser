@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { logout } from "../features/authSlice";
 import profilePic from "../images/profilePic.jpg";
 import socket from "../socket/socket";
+import { toast } from "react-toastify";
 
 export default function HomePage() {
   const user = useSelector((state) => state.auth.user);
@@ -20,6 +21,13 @@ export default function HomePage() {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  useEffect(()=> {
+    socket.on("joinSuccess", ()=>{
+      navigate("/Lobby");
+    });
+
+  },[])
 
   function handleLogout() {
     localStorage.clear();
@@ -43,7 +51,6 @@ export default function HomePage() {
       username: user.username,
     };
     socket.emit("joinGame", { user: userInfo, roomCode: gameCode });
-    navigate("/Lobby");
   }
 
   return (

@@ -61,7 +61,6 @@ export default function Lobby() {
 
   function handleGameStart() {
     socket.emit("startGame", lobby.roomCode);
-    navigate("/GamePage");
   }
 
   function renderUsers() {

@@ -12,6 +12,8 @@ import PrivateRoute from "./PrivateRoute/privateRoute";
 import HomePage from "./views/HomePage";
 import GamePage from "./views/GamePage";
 import Lobby from "./views/Lobby";
+import { ToastContainer, toast } from "react-toastify";
+import socket from "./socket/socket";
 
 import "react-toastify/dist/ReactToastify.css";
 
@@ -31,6 +33,16 @@ function App() {
 
   useEffect(() => {
     initializeActiveUser();
+
+    socket.on("error", (errorMsg) => {
+      console.log('join failed');
+      const notify = () =>
+      toast.error(errorMsg, {
+        toastId: "invalid",
+      });
+      notify();
+    })
+
   }, []);
 
   function initializeActiveUser() {
@@ -44,6 +56,7 @@ function App() {
 
   return (
     <ThemeProvider theme={customTheme}>
+      <ToastContainer />
       <BrowserRouter>
         <Routes>
           <Route path="/Login" element={<Login />}></Route>
@@ -59,9 +72,7 @@ function App() {
           <Route
             path="/HomePage"
             element={
-              <PrivateRoute>
                 <HomePage />
-              </PrivateRoute>
             }
           />
           <Route
