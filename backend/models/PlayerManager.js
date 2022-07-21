@@ -17,7 +17,9 @@ module.exports = class PlayerManager {
   }
 
   removePlayer(player_id) {
-    this.playerList = this.userlist.filter((user) => user._id !== player_id);
+    console.log(player_id);
+    this.playerList = this.playerList.filter((user) => user._id !== player_id);
+    console.log('removed player', this.playerList);
   }
 
   getPlayerCount() {

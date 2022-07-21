@@ -2,7 +2,7 @@ import SignUp from "./views/SignUp";
 import "@fontsource/roboto";
 import { ThemeProvider } from "@mui/material/styles";
 import { createTheme } from "@mui/material";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import "./style.css";
 import Login from "./views/Login";
 import { login } from "./features/authSlice";
@@ -33,6 +33,7 @@ function App() {
 
   useEffect(() => {
     initializeActiveUser();
+
 
     socket.on("error", (errorMsg) => {
       console.log('join failed');

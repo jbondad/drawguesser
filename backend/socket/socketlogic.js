@@ -8,7 +8,7 @@
 const Room = require("../models/Room");
 const Words = require("../game/wordList");
 
-let roomCollection = []; 
+let roomCollection = new Map(); 
 exports.socketapp = function (io, socket) {
   // ********************************************************************** //
   // ***** ACCOUNT PAGE *************************************************** //
@@ -16,11 +16,14 @@ exports.socketapp = function (io, socket) {
 
   // createGame - creates a new Room object and returns the roomCode
   socket.on("createGame", (data) => {
+    socket.userId = data._id;
+    console.log('created', socket.userId);
     let user = data;
     let room = new Room(data._id); // create new Room
+    socket.room = room.roomCode;
     room.playerManager.addPlayer(user);
     room.playerManager.getPlayer(user._id).roomCreator = true;
-    roomCollection.push(room);
+    roomCollection.set(room.roomCode, room)
     socket.emit("roomCode", room.roomCode); // send code back to user
     socket.emit("host", room.creatorID);
     socket.join(room.roomCode); // Join Room
@@ -30,9 +33,12 @@ exports.socketapp = function (io, socket) {
 
   // joinGame - join room using gameCode
   socket.on("joinGame", (data) => {
+    socket.userId = data.user._id;
+    console.log('joined', socket.userId);
     const code = data.roomCode;
     const user = data.user;
-    let room = roomCollection.find(({ roomCode }) => roomCode === code);
+    console.log(user);
+    let room = roomCollection.get(code);
 
     if (room) {
       if (room.gameManager.state === 1) {
@@ -42,6 +48,7 @@ exports.socketapp = function (io, socket) {
         socket.emit("roomCode", room.roomCode); // send roomCode to user   // notify subscribers
         socket.emit("host", room.creatorID);
         socket.emit("joinSuccess");
+        socket.room = room.roomCode;
         sendPlayerList(room);
       } else {
         // unable to join because game is in progress
@@ -59,20 +66,25 @@ exports.socketapp = function (io, socket) {
   // ********************************************************************** //
 
   socket.on("disconnect", () => {
-    console.log("disconnected");
-    //  for (let i = 0; i < roomCollection.length; i++) {
-    //      console.log(JSON.stringify(roomCollection[i]));
-    //      let player = roomCollection[i].playerManager.getPlayer(socket.request.user._id)
-    //      if (player !== null) {
-    //          player.gameReady = false;
-    //          sendPlayerList(roomCollection[i]);
-    //      }
-    //  }
+    if(socket.room){
+      let room = roomCollection.get(socket.room);
+      if(room.creatorID === socket.userId){
+        socket.to(room.roomCode).emit("roomDeleted");
+        console.log('deleted room');
+        roomCollection.delete(socket.room)
+      } else {
+        console.log("user left room", socket.userId);
+        room.playerManager.removePlayer(socket.userId);
+        sendGameUpdate(room);
+        sendPlayerList(room);
+      }
+
+    } 
   });
 
   // room's creator starts game
-  socket.on("playerListStart", (gameCode) => {
-    let room = roomCollection.find(({ roomCode }) => roomCode === gameCode);
+  socket.on("playerListStart", (code) => {
+    let room = roomCollection.get(code);
     let player = room.playerManager.getPlayer(socket.request.user._id);
     if (player.roomCreator && room.playerManager.playersReady()) {
       player.gameReady = true;
@@ -100,9 +112,8 @@ exports.socketapp = function (io, socket) {
 
   // player sends new message
   socket.on("newMessage", (data) => {
-
     const code = data.code;
-    let room = roomCollection.find(({ roomCode }) => roomCode === code);
+    let room = roomCollection.get(code);
     let player = room.playerManager.getPlayer(data._id);
     let correct = room.gameManager.checkGuess(data.message);
     console.log(data.message, room.gameManager.word, correct)
@@ -136,7 +147,7 @@ exports.socketapp = function (io, socket) {
 
   socket.on("wordChosen", (data) => {
     const { code, word } = data;
-    let room = roomCollection.find(({ roomCode }) => roomCode === code);
+    let room = roomCollection.get(code);
     room.gameManager.chooseWord(word);
     io.in(room.roomCode).emit("clearDrawing");
     room.chatManager.newServerMessage(
@@ -153,9 +164,9 @@ exports.socketapp = function (io, socket) {
 
   // Player starts the game
   socket.on("startGame", (code) => {
-    let room = roomCollection.find(({ roomCode }) => roomCode === code);
+    let room = roomCollection.get(code);
     if(room.playerManager.getPlayerCount() > 1){
-      socket.to(code).emit("startedGame");
+      io.in(code).emit("startedGame");
       room.gameManager.startGame();
       room.chatManager.newServerMessage(
         room.gameManager.currentDrawer + " is choosing a word!"
@@ -168,10 +179,6 @@ exports.socketapp = function (io, socket) {
 
   });
 
-  // TODO: handle when user leaves/refreshes page mid game
-  socket.on("leaveLobby", (code)=> {
-
-  })
 
   // standardized game-component reply
   function sendGameUpdate(room) {
@@ -183,7 +190,7 @@ exports.socketapp = function (io, socket) {
 
   function runTimer(code) {
     let counter = 60;
-    let room = roomCollection.find(({ roomCode }) => roomCode === code);
+    let room = roomCollection.get(code);
     room.gameManager.interval = setInterval(() => {
       io.in(code).emit("timer", counter);
       if (counter === 0) {

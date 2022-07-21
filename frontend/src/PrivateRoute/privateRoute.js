@@ -4,8 +4,7 @@ import { useSelector } from "react-redux";
 
 const PrivateRoute = ({ children }) => {
   const loggedIn = localStorage.getItem("user") !== null;
-  const lobby = useSelector((state) => state.lobby);
-  const inLobby = lobby.roomCode !== "";
+  const inLobby = useSelector((state) => state.auth.user.inLobby);
 
   if(loggedIn && inLobby){
     return children;

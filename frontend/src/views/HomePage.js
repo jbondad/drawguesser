@@ -10,10 +10,10 @@ import {
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { logout } from "../features/authSlice";
+import { logout, setInLobby } from "../features/authSlice";
 import profilePic from "../images/profilePic.jpg";
 import socket from "../socket/socket";
-import { toast } from "react-toastify";
+import { setPlayerList, setRoomCode, setGame } from "../features/lobbySlice";
 
 export default function HomePage() {
   const user = useSelector((state) => state.auth.user);
@@ -24,7 +24,16 @@ export default function HomePage() {
 
   useEffect(()=> {
     socket.on("joinSuccess", ()=>{
+      dispatch(setInLobby());
       navigate("/Lobby");
+    });
+
+    socket.on("roomCode", (data) => {
+      dispatch(setRoomCode(data));
+    });
+
+    socket.on("playerListUpdate", (data) => {
+      dispatch(setPlayerList(data));
     });
 
   },[])
@@ -41,7 +50,9 @@ export default function HomePage() {
       _id: user.id,
       username: user.username,
     };
+    dispatch(setInLobby());
     socket.emit("createGame", userInfo);
+
     navigate("/Lobby");
   }
 

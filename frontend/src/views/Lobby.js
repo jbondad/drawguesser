@@ -47,6 +47,7 @@ export default function Lobby() {
     });
 
     socket.on("playerListUpdate", (data) => {
+      console.log('player list update', data);
       dispatch(setPlayerList(data));
     });
 
@@ -57,6 +58,10 @@ export default function Lobby() {
     socket.on("gameUpdate", (data) => {
       dispatch(setGame(data));
     });
+
+    socket.on("roomDeleted", () =>{
+      navigate('/HomePage')
+    })
   }, []);
 
   function handleGameStart() {

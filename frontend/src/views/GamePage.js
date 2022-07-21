@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { Chat } from "../components/Chat";
 import socket from "../socket/socket";
+import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { Box, Container, Typography} from "@mui/material";
 import { setPlayerList, setRoomCode, setGame } from "../features/lobbySlice";
@@ -10,12 +11,17 @@ import Users from "../components/Users";
 
 export default function GamePage() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   
   useEffect(() => {
     socket.on("roomCode", (data) => {
       dispatch(setRoomCode(data));
     });
+
+    socket.on("roomDeleted", () =>{
+      navigate('/HomePage')
+    })
 
     socket.on("playerListUpdate", (data) => {
       dispatch(setPlayerList(data));

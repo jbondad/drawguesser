@@ -5,6 +5,7 @@ const initialState = {
     username: "",
     token: "",
     id: "",
+    inLobby: false,
   },
 };
 
@@ -25,9 +26,13 @@ const authSlice = createSlice({
     logout: (state, action) => {
       state.user = null;
     },
+
+    setInLobby: (state, action) => {
+      state.user.inLobby = true;
+    },
   },
 });
 
-export const { login, logout } = authSlice.actions;
+export const { login, logout, setInLobby } = authSlice.actions;
 export default authSlice.reducer;
 export const selectCurrentUser = (state) => state.auth.user;
