@@ -102,7 +102,7 @@ export function Chat() {
         }}
         value={message}
         onChange={(e) => setMessage(e.target.value)}
-        autoComplete="false"
+        autoComplete="off"
         onKeyPress={(e) => {
           if (e.key === "Enter") {
             setMessage(e.target.value);

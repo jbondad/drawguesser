@@ -426,12 +426,13 @@ const wordCollection = [
   "Purse",
 ];
 
-function getWordOptions(){
-    result = wordCollection.slice(0, 3).map(function () { 
-        return this.splice(Math.floor(Math.random() * this.length), 1)[0];
-    }, wordCollection.slice());
+// Gets 3 random words from the list
+function getWordOptions() {
+  result = wordCollection.slice(0, 3).map(function () {
+    return this.splice(Math.floor(Math.random() * this.length), 1)[0];
+  }, wordCollection.slice());
 
-    return result;
+  return result;
 }
 
-module.exports = { getWordOptions}
+module.exports = { getWordOptions };

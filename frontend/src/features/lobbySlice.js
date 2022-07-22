@@ -40,10 +40,16 @@ const lobbySlice = createSlice({
       const host = action.payload;
       state.host = host;
     },
-    reset: () => initialState
+    reset: () => initialState,
   },
 });
 
-export const { setRoomCode, setPlayerList, setGame, setMessages, setHost, reset } =
-  lobbySlice.actions;
+export const {
+  setRoomCode,
+  setPlayerList,
+  setGame,
+  setMessages,
+  setHost,
+  reset,
+} = lobbySlice.actions;
 export default lobbySlice.reducer;

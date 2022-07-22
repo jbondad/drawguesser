@@ -5,10 +5,8 @@
  */
 
 require("dotenv").config("globalvar.env");
-console.log(process.env.MONGO_URI);
 
 const port = process.env.PORT;
-console.log(port);
 
 // set up  server
 const express = require("express");

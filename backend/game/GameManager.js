@@ -8,14 +8,13 @@ const GAME_STATE_DRAWING = 4;
 const GAME_STATE_END = 5;
 const Words = require("./wordList");
 
-
 module.exports = class GameManager {
   constructor(playerManager) {
     this.playerManager = playerManager;
     this.state = GAME_STATE_WAITING;
     this.guessedPlayers = new Set(); // # of players that have correctly guessed the drawing
     this.started = false;
-    this.rounds = 3;
+    this.rounds = 2;
     this.currentRound = 1;
     this.currentDrawer = "none";
     this.currentDrawerIndex = 0;
@@ -35,18 +34,33 @@ module.exports = class GameManager {
       this.playerManager.playerList[this.currentDrawerIndex].username;
   }
 
-
   chooseWord(word) {
     this.word = word;
     this.state = GAME_STATE_DRAWING;
   }
 
-  calculateScore() {
-    return 1000 - (this.guessedPlayers.size * 100);
+  removePlayer(playerId) {
+    this.playerManager.removePlayer(playerId);
+    if (this.state !== 1) {
+      if (this.playerManager.getPlayerCount() === 1) {
+        clearInterval(this.interval);
+        this.state = GAME_STATE_END;
+        this.winner = this.playerManager.playerList[0].username;
+      }
+      if (this.playerManager.getPlayerCount() < this.currentDrawerIndex) {
+        this.currentDrawerIndex = this.currentDrawerIndex - 1;
+      }
+    }
   }
 
-  increaseDrawerScore(){
-    this.playerManager.playerList[this.currentDrawerIndex].score = this.playerManager.playerList[this.currentDrawerIndex].score + (100 * this.guessedPlayers.size);
+  calculateScore() {
+    return 1000 - this.guessedPlayers.size * 100;
+  }
+
+  increaseDrawerScore() {
+    this.playerManager.playerList[this.currentDrawerIndex].score =
+      this.playerManager.playerList[this.currentDrawerIndex].score +
+      100 * this.guessedPlayers.size;
   }
 
   increasePlayerScore(player) {
@@ -54,11 +68,10 @@ module.exports = class GameManager {
     this.guessedPlayers.add(player._id);
   }
 
-  checkGuess(guess){
-    if(this.word.toLowerCase() == guess.toLowerCase()){
+  checkGuess(guess) {
+    if (this.word.toLowerCase() == guess.toLowerCase()) {
       return true;
-    }
-    else {
+    } else {
       return false;
     }
   }
@@ -70,11 +83,16 @@ module.exports = class GameManager {
     return false;
   }
 
-  nextGameState() {
+  getPlayersSortedByScore() {
+    var players = JSON.parse(JSON.stringify(this.playerManager.playerList));
+    var sorted = players.sort((a, b) => b.score - a.score);
+    return players.sort((a, b) => b.score - a.score);
+  }
 
-    this.increaseDrawerScore();
+  nextGameState() {
     if (this.currentDrawerIndex < this.playerManager.getPlayerCount() - 1) {
       this.guessedPlayers.clear();
+      this.increaseDrawerScore();
       this.currentDrawerIndex = ++this.currentDrawerIndex;
       this.wordOptions = Words.getWordOptions();
       this.state = GAME_STATE_CHOOSING_WORD;
@@ -82,12 +100,12 @@ module.exports = class GameManager {
       if (this.currentRound < this.rounds) {
         this.guessedPlayers.clear();
         this.currentRound = ++this.currentRound;
+        this.increaseDrawerScore();
         this.currentDrawerIndex = 0;
         this.wordOptions = Words.getWordOptions();
         this.state = GAME_STATE_CHOOSING_WORD;
       } else {
         this.winner = this.playerManager.getWinner().username;
-        console.log("winner is", this.winner);
         this.state = GAME_STATE_END;
       }
     }
@@ -105,10 +123,5 @@ module.exports = class GameManager {
       wordOptions: this.wordOptions,
       winner: this.winner,
     };
-  }
-
-  // debug printing
-  printStateDebug(fromState, toState) {
-    console.log("\n " + fromState + " -> " + toState + " \n");
   }
 };

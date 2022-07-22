@@ -1,12 +1,5 @@
 import React, { useState } from "react";
-import {
-  TextField,
-  Paper,
-  Typography,
-  Alert,
-  Button,
-  Box,
-} from "@mui/material";
+import { TextField, Paper, Typography, Button } from "@mui/material";
 import { Link } from "react-router-dom";
 import { registerUser } from "../api/user";
 

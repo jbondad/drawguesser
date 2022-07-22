@@ -34,16 +34,13 @@ function App() {
   useEffect(() => {
     initializeActiveUser();
 
-
     socket.on("error", (errorMsg) => {
-      console.log('join failed');
       const notify = () =>
-      toast.error(errorMsg, {
-        toastId: "invalid",
-      });
+        toast.error(errorMsg, {
+          toastId: "invalid",
+        });
       notify();
-    })
-
+    });
   }, []);
 
   function initializeActiveUser() {
@@ -70,12 +67,7 @@ function App() {
               </PrivateRoute>
             }
           />
-          <Route
-            path="/HomePage"
-            element={
-                <HomePage />
-            }
-          />
+          <Route path="/HomePage" element={<HomePage />} />
           <Route
             path="/GamePage"
             element={

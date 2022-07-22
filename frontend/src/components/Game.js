@@ -18,7 +18,7 @@ export default function Game() {
 
   const [showBackdrop, setShowBackdrop] = useState(false);
   const [strokeColor, setStrokeColor] = useState("#000000");
-  const [strokeWidth, setStrokeWidth] = useState(4);
+  const [strokeWidth, setStrokeWidth] = useState(4); // TODO: be able to change stroke width
   const colors = [
     "#000000",
     "#FF0000",
@@ -132,7 +132,8 @@ export default function Game() {
   }
   function backToHomePage() {
     dispatch(reset());
-    navigate("/HomePage")
+    socket.emit("leaveLobby");
+    navigate("/HomePage");
   }
 
   function renderGameOver() {
@@ -161,7 +162,9 @@ export default function Game() {
           >
             Game Over {game.winner} has won!
           </Typography>
-          <Button variant="contained" onClick={()=>backToHomePage()}>Go back to home page</Button>
+          <Button variant="contained" onClick={() => backToHomePage()}>
+            Go back to home page
+          </Button>
         </Box>
       </Backdrop>
     );
@@ -174,6 +177,7 @@ export default function Game() {
           border: "1px solid black",
           borderRadius: "5px",
           backgroundColor: "white",
+          width: "1000px",
           height: "600px",
           position: "relative",
         }}

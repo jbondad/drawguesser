@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { logout, setInLobby } from "../features/authSlice";
 import profilePic from "../images/profilePic.jpg";
 import socket from "../socket/socket";
-import { setPlayerList, setRoomCode, setGame } from "../features/lobbySlice";
+import { setPlayerList, setRoomCode } from "../features/lobbySlice";
 
 export default function HomePage() {
   const user = useSelector((state) => state.auth.user);
@@ -22,8 +22,8 @@ export default function HomePage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  useEffect(()=> {
-    socket.on("joinSuccess", ()=>{
+  useEffect(() => {
+    socket.on("joinSuccess", () => {
       dispatch(setInLobby());
       navigate("/Lobby");
     });
@@ -35,8 +35,7 @@ export default function HomePage() {
     socket.on("playerListUpdate", (data) => {
       dispatch(setPlayerList(data));
     });
-
-  },[])
+  }, []);
 
   function handleLogout() {
     localStorage.clear();

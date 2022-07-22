@@ -4,15 +4,14 @@ import {
   Typography,
   Box,
   Button,
-  TextField,
   ListItem,
   List,
-  FormGroup,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import socket from "../socket/socket";
+import { toast } from "react-toastify";
 
 import {
   setPlayerList,
@@ -21,7 +20,7 @@ import {
   setMessages,
   setHost,
 } from "../features/lobbySlice";
-import { render } from "react-dom";
+
 export default function Lobby() {
   const user = useSelector((state) => state.auth.user);
   const lobby = useSelector((state) => state.lobby);
@@ -47,7 +46,6 @@ export default function Lobby() {
     });
 
     socket.on("playerListUpdate", (data) => {
-      console.log('player list update', data);
       dispatch(setPlayerList(data));
     });
 
@@ -59,9 +57,14 @@ export default function Lobby() {
       dispatch(setGame(data));
     });
 
-    socket.on("roomDeleted", () =>{
-      navigate('/HomePage')
-    })
+    socket.on("roomDeleted", () => {
+      const notify = () =>
+        toast.error("Host left the lobby.", {
+          toastId: "error",
+        });
+      notify();
+      navigate("/HomePage");
+    });
   }, []);
 
   function handleGameStart() {

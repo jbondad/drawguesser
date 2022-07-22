@@ -1,7 +1,7 @@
 /**
  * Room object that manages the room session. Contains several components:
  * - PlayerManager Object - manages players in the room
- * - GameManager Object - manages the actual game (Space Mafia Among Us)
+ * - GameManager Object - manages the actual game
  * - ChatManager Object - manages the room's chat system
  */
 

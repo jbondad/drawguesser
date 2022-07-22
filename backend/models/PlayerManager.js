@@ -17,9 +17,7 @@ module.exports = class PlayerManager {
   }
 
   removePlayer(player_id) {
-    console.log(player_id);
     this.playerList = this.playerList.filter((user) => user._id !== player_id);
-    console.log('removed player', this.playerList);
   }
 
   getPlayerCount() {
@@ -35,23 +33,17 @@ module.exports = class PlayerManager {
     }
     return null;
   }
-
   getWinner() {
     let winner = this.playerList.reduce((max, player) =>
-      max.score > player.votes ? max : player
+      max.score > player.score ? max : player
     );
     return winner;
   }
-
   resetScores() {
     let players = this.playerList;
 
     for (let i = 0; i < players.length; i++) {
       players[i].score = 0;
     }
-  }
-
-  printList() {
-    console.log(JSON.stringify(this.playerList, null, 1));
   }
 };

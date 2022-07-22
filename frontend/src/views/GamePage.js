@@ -3,25 +3,30 @@ import { Chat } from "../components/Chat";
 import socket from "../socket/socket";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { Box, Container, Typography} from "@mui/material";
+import { Box, Container, Typography } from "@mui/material";
 import { setPlayerList, setRoomCode, setGame } from "../features/lobbySlice";
 import Game from "../components/Game";
 import GameHeader from "../components/GameHeader";
 import Users from "../components/Users";
+import { toast } from "react-toastify";
 
 export default function GamePage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  
   useEffect(() => {
     socket.on("roomCode", (data) => {
       dispatch(setRoomCode(data));
     });
 
-    socket.on("roomDeleted", () =>{
-      navigate('/HomePage')
-    })
+    socket.on("roomDeleted", () => {
+      const notify = () =>
+        toast.error("Host left the lobby.", {
+          toastId: "error",
+        });
+      notify();
+      navigate("/HomePage");
+    });
 
     socket.on("playerListUpdate", (data) => {
       dispatch(setPlayerList(data));
@@ -31,7 +36,6 @@ export default function GamePage() {
       dispatch(setGame(data));
     });
   }, []);
-
 
   return (
     <Container
@@ -82,7 +86,7 @@ export default function GamePage() {
             borderRadius: "7px",
           }}
         >
-          <Users/>
+          <Users />
         </Box>
         <Box
           sx={{

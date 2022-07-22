@@ -8,22 +8,18 @@
 const Room = require("../models/Room");
 const Words = require("../game/wordList");
 
-let roomCollection = new Map(); 
+let roomCollection = new Map();
 exports.socketapp = function (io, socket) {
-  // ********************************************************************** //
-  // ***** ACCOUNT PAGE *************************************************** //
-  // ********************************************************************** //
 
   // createGame - creates a new Room object and returns the roomCode
   socket.on("createGame", (data) => {
     socket.userId = data._id;
-    console.log('created', socket.userId);
     let user = data;
     let room = new Room(data._id); // create new Room
     socket.room = room.roomCode;
     room.playerManager.addPlayer(user);
     room.playerManager.getPlayer(user._id).roomCreator = true;
-    roomCollection.set(room.roomCode, room)
+    roomCollection.set(room.roomCode, room);
     socket.emit("roomCode", room.roomCode); // send code back to user
     socket.emit("host", room.creatorID);
     socket.join(room.roomCode); // Join Room
@@ -34,10 +30,8 @@ exports.socketapp = function (io, socket) {
   // joinGame - join room using gameCode
   socket.on("joinGame", (data) => {
     socket.userId = data.user._id;
-    console.log('joined', socket.userId);
     const code = data.roomCode;
     const user = data.user;
-    console.log(user);
     let room = roomCollection.get(code);
 
     if (room) {
@@ -61,25 +55,25 @@ exports.socketapp = function (io, socket) {
     }
   });
 
-  // ********************************************************************** //
-  // ***** ROOM PAGE ****************************************************** //
-  // ********************************************************************** //
 
   socket.on("disconnect", () => {
-    if(socket.room){
-      let room = roomCollection.get(socket.room);
-      if(room.creatorID === socket.userId){
-        socket.to(room.roomCode).emit("roomDeleted");
-        console.log('deleted room');
-        roomCollection.delete(socket.room)
-      } else {
-        console.log("user left room", socket.userId);
-        room.playerManager.removePlayer(socket.userId);
-        sendGameUpdate(room);
-        sendPlayerList(room);
-      }
+    handleLeaveRoom(socket.room);
+  });
 
-    } 
+  socket.on("leaveLobby", () => {
+    let room;
+    let roomCode = socket.room;
+    if (roomCode) {
+      room = roomCollection.get(roomCode);
+    }
+    if (room) {
+      if (room.creatorID === socket.userId) {
+        roomCollection.delete(socket.room);
+      } else {
+        room.gameManager.removePlayer(socket.userId);
+      }
+      socket.leave(socket.room);
+    }
   });
 
   // room's creator starts game
@@ -94,37 +88,26 @@ exports.socketapp = function (io, socket) {
     sendPlayerList(room);
   });
 
-  // standardized playerlist-component reply
-  function sendPlayerList(room) {
-    // console.log('sendPlayerList: ' + room.gameManager.state + ':');
-    //console.log(JSON.stringify(room.playerManager.playerList, null, 1));    // DEBUG PRINTING
-    io.in(room.roomCode).emit(
-      "playerListUpdate",
-      room.playerManager.playerList
-    );
-  }
 
-  socket.on('wordOptions', ()=>{
+  socket.on("wordOptions", () => {
     const words = Words.getWordOptions();
-    socket.emit('wordOptionsUpdate', words);
-
+    socket.emit("wordOptionsUpdate", words);
   });
 
-  // player sends new message
+
   socket.on("newMessage", (data) => {
     const code = data.code;
     let room = roomCollection.get(code);
     let player = room.playerManager.getPlayer(data._id);
     let correct = room.gameManager.checkGuess(data.message);
-    console.log(data.message, room.gameManager.word, correct)
-    if(room.gameManager.currentDrawer !== player.username){
+    if (room.gameManager.currentDrawer !== player.username) {
       if (correct) {
         room.chatManager.newServerMessage(
           player.username + " has guessed the word!"
         );
-        room.gameManager.increasePlayerScore(player)
+        room.gameManager.increasePlayerScore(player);
       }
-  
+
       if (room.gameManager.checkCorrectGuesses()) {
         room.chatManager.newServerMessage(
           "The word was " + room.gameManager.word
@@ -132,18 +115,14 @@ exports.socketapp = function (io, socket) {
         room.gameManager.nextGameState();
         clearInterval(room.gameManager.interval);
         sendGameUpdate(room);
-    }
+      }
       room.chatManager.newMessage(player.username, data.message, correct);
       sendMessageList(room);
       sendPlayerList(room);
     }
-
   });
 
-  // standardized chat-component reply
-  function sendMessageList(room) {
-    io.in(room.roomCode).emit("messageUpdate", room.chatManager.messageList);
-  }
+
 
   socket.on("wordChosen", (data) => {
     const { code, word } = data;
@@ -165,7 +144,7 @@ exports.socketapp = function (io, socket) {
   // Player starts the game
   socket.on("startGame", (code) => {
     let room = roomCollection.get(code);
-    if(room.playerManager.getPlayerCount() > 1){
+    if (room.playerManager.getPlayerCount() > 1) {
       io.in(code).emit("startedGame");
       room.gameManager.startGame();
       room.chatManager.newServerMessage(
@@ -176,15 +155,38 @@ exports.socketapp = function (io, socket) {
     } else {
       socket.emit("error", "Not enough players");
     }
-
   });
 
+  function handleLeaveRoom(roomCode) {
+    let room;
+    if (roomCode) {
+      room = roomCollection.get(roomCode);
+    }
+    if (room) {
+      if (room.creatorID === socket.userId) {
+        socket.to(room.roomCode).emit("roomDeleted");
+        roomCollection.delete(socket.room);
+      } else {
+        room.gameManager.removePlayer(socket.userId);
+        sendGameUpdate(room);
+        sendPlayerList(room);
+      }
+    }
+  }
 
-  // standardized game-component reply
-  function sendGameUpdate(room) {
-    console.log(
-      "sendGame Update: " + JSON.stringify(room.gameManager.getState())
+
+  function sendPlayerList(room) {
+    io.in(room.roomCode).emit(
+      "playerListUpdate",
+      room.gameManager.getPlayersSortedByScore()
     );
+  }
+
+  function sendMessageList(room) {
+    io.in(room.roomCode).emit("messageUpdate", room.chatManager.messageList);
+  }
+
+  function sendGameUpdate(room) {
     io.in(room.roomCode).emit("gameUpdate", room.gameManager.getState());
   }
 

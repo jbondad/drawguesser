@@ -20,6 +20,7 @@ export default function Canvas({ color, strokeWidth }) { // todo: change stroke 
   }, [contextRef]);
 
   useEffect(() => {
+    console.log("canvas ref from use effect", canvasRef);
     const canvas = canvasRef.current;
     canvas.style.width = `100%`;
     canvas.style.height = `100%`;
@@ -36,9 +37,9 @@ export default function Canvas({ color, strokeWidth }) { // todo: change stroke 
     contextRef.current = context;
 
     socket.on("clearDrawing", () => {
-      clearCanvas();
+      clearCanvas(canvas);
     });
-  }, []);
+  }, [canvasRef]);
 
   const draw = (x, y, state, color) => {
     if (state === "startDrawing") {
@@ -73,13 +74,13 @@ export default function Canvas({ color, strokeWidth }) { // todo: change stroke 
     emitDrawingData({ x: offsetX, y: offsetY, state: "endDrawing", color });
   };
 
-  const clearCanvas = () => {
-    console.log("clearing", canvasRef.current.height);
+  const clearCanvas = (canvas) => {
+    console.log("CANVAS REF", canvas);
     contextRef.current.clearRect(
       0,
       0,
-      canvasRef.current.offsetWidth * 2,
-      canvasRef.current.offsetHeight * 2
+      canvas.offsetWidth * 2,
+      canvas.offsetHeight * 2
     );
   };
 

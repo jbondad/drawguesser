@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import socket from "../socket/socket";
 import { Box, Typography } from "@mui/material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
@@ -26,8 +26,19 @@ export default function GameHeader() {
     ) {
       return game.word;
     }
-    return "_".repeat(game.word.length);
+
+    let hiddenWord = "";
+    for (let i = 0; i < game.word.length; i++) {
+      if (game.word[i] === " ") {
+        hiddenWord = hiddenWord + " ";
+      } else {
+        hiddenWord = hiddenWord + "_";
+      }
+    }
+
+    return hiddenWord;
   }
+
   return (
     <Box
       sx={{
