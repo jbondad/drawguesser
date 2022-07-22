@@ -32,27 +32,24 @@ const register = async (req, res, next) => {
 
   let user = new User({ username, email, password: encryptedPassword });
 
-  const userExists = await User.findOne({
-    $or: [{ username: username }, { email: email }],
-  }).exec();
+  const userExists = await User.findOne({username: username}).exec();
 
   if (userExists) {
-    res.status(422).json({
-      message: "Username or Email already in use.",
+    res.json({
+      error: "Username already taken.",
     });
   } else {
     user
       .save()
       .then((user) => {
         res.json({
-          message: "User Added Succesfully!",
+          success: "Account successfully created!",
         });
       })
       .catch((error) => {
         console.log(error);
         res.json({
-          // res.json and res.send are the same thing
-          message: "User failed to add",
+          error: "User failed to add",
         });
       });
   }
