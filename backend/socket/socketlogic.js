@@ -192,11 +192,11 @@ exports.socketapp = function (io, socket) {
   }
 
   function runTimer(code) {
-    let counter = 10;
     let room = roomCollection.get(code);
+    room.gameManager.counter = 30;
     room.gameManager.interval = setInterval(() => {
-      io.in(code).emit("timer", counter);
-      if (counter === 0) {
+      io.in(code).emit("timer", room.gameManager.counter);
+      if (room.gameManager.counter === 0) {
         clearInterval(room.gameManager.interval);
         room.gameManager.nextGameState();
         room.chatManager.newServerMessage(
@@ -205,7 +205,7 @@ exports.socketapp = function (io, socket) {
         sendMessageList(room);
         sendGameUpdate(room);
       }
-      counter--;
+      room.gameManager.counter--;
     }, 1000);
   }
 };

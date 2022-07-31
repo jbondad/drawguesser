@@ -21,6 +21,7 @@ module.exports = class GameManager {
     this.currentDrawerIndex = 0;
     this.word = "";
     this.wordOptions = [];
+    this.counter = 30;
     this.winner = "";
     this.interval = null;
   }
@@ -55,7 +56,7 @@ module.exports = class GameManager {
   }
 
   calculateScore() {
-    return 1000 - this.guessedPlayers.size * 100;
+    return (1000 - this.guessedPlayers.size * 100) + (this.counter * 50);
   }
 
   increaseDrawerScore() {
