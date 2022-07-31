@@ -11,6 +11,7 @@ import { useDispatch } from "react-redux";
 import PrivateRoute from "./PrivateRoute/privateRoute";
 import HomePage from "./views/HomePage";
 import GamePage from "./views/GamePage";
+import Leaderboard from "./views/Leaderboard";
 import Lobby from "./views/Lobby";
 import { ToastContainer, toast } from "react-toastify";
 import socket from "./socket/socket";
@@ -81,6 +82,14 @@ function App() {
             element={
               <PrivateRoute>
                 <Lobby />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/Leaderboard"
+            element={
+              <PrivateRoute>
+                <Leaderboard />
               </PrivateRoute>
             }
           />

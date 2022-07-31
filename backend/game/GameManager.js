@@ -7,6 +7,7 @@ const GAME_STATE_CHOOSING_WORD = 3;
 const GAME_STATE_DRAWING = 4;
 const GAME_STATE_END = 5;
 const Words = require("./wordList");
+const User = require("../User/UserModel");
 
 module.exports = class GameManager {
   constructor(playerManager) {
@@ -14,7 +15,7 @@ module.exports = class GameManager {
     this.state = GAME_STATE_WAITING;
     this.guessedPlayers = new Set(); // # of players that have correctly guessed the drawing
     this.started = false;
-    this.rounds = 2;
+    this.rounds = 3;
     this.currentRound = 1;
     this.currentDrawer = "none";
     this.currentDrawerIndex = 0;
@@ -85,7 +86,6 @@ module.exports = class GameManager {
 
   getPlayersSortedByScore() {
     var players = JSON.parse(JSON.stringify(this.playerManager.playerList));
-    var sorted = players.sort((a, b) => b.score - a.score);
     return players.sort((a, b) => b.score - a.score);
   }
 
@@ -106,6 +106,7 @@ module.exports = class GameManager {
         this.state = GAME_STATE_CHOOSING_WORD;
       } else {
         this.winner = this.playerManager.getWinner().username;
+        User.findOneAndUpdate({ username: this.winner }, {$inc: { 'wins': 1}}).exec();
         this.state = GAME_STATE_END;
       }
     }

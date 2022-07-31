@@ -10,7 +10,7 @@ const login = async (req, res, next) => {
   const user = await User.findOne({ username }).lean();
 
   if (!user) {
-    return res.json({ message: "Invalid username/password" });
+    return res.json({ message: "Invalid username" });
   }
 
   if (await bcrypt.compare(password, user.password)) {
@@ -30,7 +30,7 @@ const register = async (req, res, next) => {
   const { username, email, password } = req.body;
   const encryptedPassword = await bcrypt.hash(password, 10);
 
-  let user = new User({ username, email, password: encryptedPassword });
+  let user = new User({ username, email, password: encryptedPassword, wins: 0});
 
   const userExists = await User.findOne({username: username}).exec();
 
@@ -55,7 +55,31 @@ const register = async (req, res, next) => {
   }
 };
 
+const leaderboard = async (req, res, next) => {
+  const leaderboard = await User.find({}, 'username wins').lean();
+  if(leaderboard) {
+    return res.json({leaderboard});
+  } else{
+    res.json({
+      error: "Leaderboard doesn't exist",
+    })
+  }
+  };
+
+const increaseWins = async (req, res, next) => {
+  const { username } = req.body;
+  const user = await User.findOneAndUpdate({ username }, {$inc: { 'wins': 1}}).exec();
+  if(user) {
+    return res.json({wins : user.wins});
+  } else {
+    return res.json({error: 'error adding win'});
+  }
+}
+
+
 module.exports = {
   register,
   login,
+  leaderboard,
+  increaseWins,
 };

@@ -106,6 +106,7 @@ exports.socketapp = function (io, socket) {
           player.username + " has guessed the word!"
         );
         room.gameManager.increasePlayerScore(player);
+        room.gameManager.increaseDrawerScore();
       }
 
       if (room.gameManager.checkCorrectGuesses()) {
@@ -191,7 +192,7 @@ exports.socketapp = function (io, socket) {
   }
 
   function runTimer(code) {
-    let counter = 60;
+    let counter = 10;
     let room = roomCollection.get(code);
     room.gameManager.interval = setInterval(() => {
       io.in(code).emit("timer", counter);

@@ -99,7 +99,7 @@ export default function HomePage() {
             Create Game
           </Button>
 
-          <Button type="submit" variant="outlined" color="primary">
+          <Button type="submit" variant="outlined" color="primary" onClick={() => navigate("/Leaderboard")}>
             View Leaderboard
           </Button>
           <Button
