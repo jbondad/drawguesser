@@ -87,7 +87,7 @@ export default function HomePage() {
             display: "flex",
             justifyContent: "center",
             gap: "3em",
-            width: "500px",
+            width: "80%",
           }}
         >
           <Button
@@ -101,6 +101,15 @@ export default function HomePage() {
 
           <Button type="submit" variant="outlined" color="primary" onClick={() => navigate("/Leaderboard")}>
             View Leaderboard
+          </Button>
+
+          <Button
+            type="submit"
+            variant="outlined"
+            color="error"
+            onClick={() => navigate("/ChangePassword")}
+          >
+            Change Password
           </Button>
           <Button
             type="submit"

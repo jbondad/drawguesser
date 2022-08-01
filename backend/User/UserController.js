@@ -55,6 +55,24 @@ const register = async (req, res, next) => {
   }
 };
 
+const changePassword = async (req, res, next) => {
+  const { username, currentPassword, newPassword } = req.body;
+
+  const user = await User.findOne({ username }).lean();
+
+  if (!user) {
+    return res.json({ error: "Invalid username/password" });
+  }
+
+  if (await bcrypt.compare(currentPassword, user.password)) { 
+    const encryptedPassword = await bcrypt.hash(newPassword, 10);
+    const userPassword = await User.findOneAndUpdate({ username }, { password: encryptedPassword}).exec();
+    return res.json({ success: "Password Changed!"})
+  } else {
+    return res.json({ error: "Incorrect password" });
+  }
+};
+
 const leaderboard = async (req, res, next) => {
   const leaderboard = await User.find({}, 'username wins').lean();
   if(leaderboard) {
@@ -82,4 +100,5 @@ module.exports = {
   login,
   leaderboard,
   increaseWins,
+  changePassword,
 };

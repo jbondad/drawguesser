@@ -17,6 +17,7 @@ import { ToastContainer, toast } from "react-toastify";
 import socket from "./socket/socket";
 
 import "react-toastify/dist/ReactToastify.css";
+import ChangePassword from "./views/ChangePassword";
 
 const customTheme = createTheme({
   palette: {
@@ -90,6 +91,14 @@ function App() {
             element={
               <PrivateRoute>
                 <Leaderboard />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/ChangePassword"
+            element={
+              <PrivateRoute>
+                <ChangePassword />
               </PrivateRoute>
             }
           />

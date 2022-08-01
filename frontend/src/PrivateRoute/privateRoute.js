@@ -7,7 +7,7 @@ const PrivateRoute = ({ children }) => {
   const inLobby = useSelector((state) => state.auth.user.inLobby);
 
 
-  if (children.type.name === "Leaderboard" && loggedIn){
+  if (children.type.name != "Lobby" && loggedIn){
     return children
   }
   else if (loggedIn && inLobby) {

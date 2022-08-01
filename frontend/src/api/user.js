@@ -12,6 +12,12 @@ export async function postLogin(user) {
   return data;
 }
 
+export async function changePassword(payload) {
+  let response = await axios.post("http://localhost:8888/user/changePassword", payload)
+  let data = response.data;
+  return data;
+}
+
 export async function leaderboard() {
   let response = await axios.get("http://localhost:8888/user/leaderboard");
   let data = response.data;
@@ -24,3 +30,4 @@ export async function increaseWins(user) {
   let data = response.data;
   return data;
 }
+

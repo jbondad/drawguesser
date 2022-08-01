@@ -20,15 +20,11 @@ export default function Canvas({ color, strokeWidth }) { // todo: change stroke 
   }, [contextRef]);
 
   useEffect(() => {
-    console.log("canvas ref from use effect", canvasRef);
     const canvas = canvasRef.current;
     canvas.style.width = `100%`;
     canvas.style.height = `100%`;
-    console.log(canvas.offsetWidth);
     canvas.width = canvas.offsetWidth * 2;
     canvas.height = canvas.offsetHeight * 2;
-    console.log(canvas.height);
-    console.log(canvasRef.current.height);
 
     const context = canvas.getContext("2d");
     context.scale(2, 2);
@@ -75,7 +71,6 @@ export default function Canvas({ color, strokeWidth }) { // todo: change stroke 
   };
 
   const clearCanvas = (canvas) => {
-    console.log("CANVAS REF", canvas);
     contextRef.current.clearRect(
       0,
       0,
