@@ -147,11 +147,11 @@ exports.socketapp = function (io, socket) {
   });
 
   // Player starts the game
-  socket.on("startGame", (code) => {
+  socket.on("startGame", ({code, rounds}) => {
     let room = roomCollection.get(code);
     if (room.playerManager.getPlayerCount() > 1) {
       io.in(code).emit("startedGame");
-      room.gameManager.startGame();
+      room.gameManager.startGame(rounds);
       room.chatManager.newServerMessage(
         room.gameManager.currentDrawer + " is choosing a word!"
       );

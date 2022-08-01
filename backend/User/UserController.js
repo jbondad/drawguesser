@@ -47,7 +47,6 @@ const register = async (req, res, next) => {
         });
       })
       .catch((error) => {
-        console.log(error);
         res.json({
           error: "User failed to add",
         });

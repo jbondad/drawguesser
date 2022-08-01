@@ -12,6 +12,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import socket from "../socket/socket";
 import { toast } from "react-toastify";
+import GameSettings from "../components/GameSettings";
 
 import {
   setPlayerList,
@@ -24,6 +25,12 @@ import {
 export default function Lobby() {
   const user = useSelector((state) => state.auth.user);
   const lobby = useSelector((state) => state.lobby);
+
+  const [rounds, setRounds] = React.useState(3);
+
+  const handleSelectRounds = (event) => {
+    setRounds(event.target.value);
+  };
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -68,7 +75,7 @@ export default function Lobby() {
   }, []);
 
   function handleGameStart() {
-    socket.emit("startGame", lobby.roomCode);
+    socket.emit("startGame", {code: lobby.roomCode, rounds: rounds} );
   }
 
   function renderUsers() {
@@ -112,13 +119,15 @@ export default function Lobby() {
           padding: "40px 40px",
           outline: "black solid 1px",
           width: 300,
-          height: 150,
+          height: 300,
           margin: "20px auto",
         }}
       >
         <Typography variant="h5">Room Code: {lobby.roomCode}</Typography>
         <Typography>Waiting for host to start...</Typography>
         {isHost() && (
+          <>
+          <GameSettings handleChange={handleSelectRounds} rounds={rounds}></GameSettings>
           <Button
             type="submit"
             variant="contained"
@@ -127,6 +136,7 @@ export default function Lobby() {
           >
             Start Game
           </Button>
+          </>
         )}
       </Paper>
     </Container>

@@ -1,6 +1,9 @@
-// Turn off game engine logging
-// console.log = function() {}
-
+/**
+ * GameManager.js
+ *
+ * Handles game logic
+ * 
+ */
 const GAME_STATE_WAITING = 1;
 const GAME_STATE_STARTED = 2;
 const GAME_STATE_CHOOSING_WORD = 3;
@@ -26,8 +29,9 @@ module.exports = class GameManager {
     this.interval = null;
   }
 
-  startGame() {
+  startGame(rounds) {
     this.playerManager.resetScores();
+    this.rounds = rounds;
     this.wordOptions = Words.getWordOptions();
     this.state = GAME_STATE_CHOOSING_WORD;
     this.currentRound = 1;
