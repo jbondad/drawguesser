@@ -60,6 +60,7 @@ exports.socketapp = function (io, socket) {
     handleLeaveRoom(socket.room);
   });
 
+
   socket.on("leaveLobby", () => {
     let room;
     let roomCode = socket.room;
@@ -89,12 +90,14 @@ exports.socketapp = function (io, socket) {
   });
 
 
+  // Send words to choose
   socket.on("wordOptions", () => {
     const words = Words.getWordOptions();
     socket.emit("wordOptionsUpdate", words);
   });
 
 
+  // New chat message
   socket.on("newMessage", (data) => {
     const code = data.code;
     let room = roomCollection.get(code);
@@ -124,7 +127,7 @@ exports.socketapp = function (io, socket) {
   });
 
 
-
+  // Drawer chooses a ward
   socket.on("wordChosen", (data) => {
     const { code, word } = data;
     let room = roomCollection.get(code);
@@ -138,6 +141,7 @@ exports.socketapp = function (io, socket) {
     sendMessageList(room);
   });
 
+  // Drawing
   socket.on("draw", ({ code, line }) => {
     socket.to(code).emit("drawLine", line);
   });
@@ -158,6 +162,7 @@ exports.socketapp = function (io, socket) {
     }
   });
 
+  // Handle leaving room
   function handleLeaveRoom(roomCode) {
     let room;
     if (roomCode) {

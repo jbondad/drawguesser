@@ -73,8 +73,9 @@ export default function HomePage() {
           gap: "40px",
           padding: "40px 40px",
           outline: "black solid 1px",
-          width: 1100,
-          height: 600,
+          width: '100%',
+          height: '100%',
+          minHeight: '600px',
           margin: "20px auto",
         }}
       >
@@ -87,6 +88,7 @@ export default function HomePage() {
             display: "flex",
             justifyContent: "center",
             gap: "3em",
+            flexWrap: 'wrap',
             width: "80%",
           }}
         >

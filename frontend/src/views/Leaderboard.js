@@ -69,14 +69,14 @@ import {
             gap: "40px",
             padding: "40px 40px",
             outline: "black solid 1px",
-            width: 500,
-            height: 700,
+            width: '50%',
+            height: "100%",
             margin: "20px auto",
           }}
         >
           <Typography variant="h4">Leaderboard</Typography>
           <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 500 }} aria-label="simple table">
+      <Table  aria-label="simple table">
         <TableHead>
           <TableRow>
             <TableCell>Username</TableCell>
