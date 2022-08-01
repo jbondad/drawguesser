@@ -73,9 +73,9 @@ export default function HomePage() {
           gap: "40px",
           padding: "40px 40px",
           outline: "black solid 1px",
-          width: '100%',
-          height: '100%',
-          minHeight: '600px',
+          width: "100%",
+          height: "100%",
+          minHeight: "600px",
           margin: "20px auto",
         }}
       >
@@ -88,7 +88,7 @@ export default function HomePage() {
             display: "flex",
             justifyContent: "center",
             gap: "3em",
-            flexWrap: 'wrap',
+            flexWrap: "wrap",
             width: "80%",
           }}
         >
@@ -101,7 +101,12 @@ export default function HomePage() {
             Create Game
           </Button>
 
-          <Button type="submit" variant="outlined" color="primary" onClick={() => navigate("/Leaderboard")}>
+          <Button
+            type="submit"
+            variant="outlined"
+            color="primary"
+            onClick={() => navigate("/Leaderboard")}
+          >
             View Leaderboard
           </Button>
 

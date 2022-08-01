@@ -2,7 +2,7 @@
  * GameManager.js
  *
  * Handles game logic
- * 
+ *
  */
 const GAME_STATE_WAITING = 1;
 const GAME_STATE_STARTED = 2;
@@ -60,7 +60,7 @@ module.exports = class GameManager {
   }
 
   calculateScore() {
-    return (1000 - this.guessedPlayers.size * 100) + (this.counter * 50);
+    return 1000 - this.guessedPlayers.size * 100 + this.counter * 50;
   }
 
   increaseDrawerScore() {
@@ -111,7 +111,10 @@ module.exports = class GameManager {
         this.state = GAME_STATE_CHOOSING_WORD;
       } else {
         this.winner = this.playerManager.getWinner().username;
-        User.findOneAndUpdate({ username: this.winner }, {$inc: { 'wins': 1}}).exec();
+        User.findOneAndUpdate(
+          { username: this.winner },
+          { $inc: { wins: 1 } }
+        ).exec();
         this.state = GAME_STATE_END;
       }
     }

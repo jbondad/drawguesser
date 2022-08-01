@@ -30,9 +30,14 @@ const register = async (req, res, next) => {
   const { username, email, password } = req.body;
   const encryptedPassword = await bcrypt.hash(password, 10);
 
-  let user = new User({ username, email, password: encryptedPassword, wins: 0});
+  let user = new User({
+    username,
+    email,
+    password: encryptedPassword,
+    wins: 0,
+  });
 
-  const userExists = await User.findOne({username: username}).exec();
+  const userExists = await User.findOne({ username: username }).exec();
 
   if (userExists) {
     res.json({
@@ -63,36 +68,41 @@ const changePassword = async (req, res, next) => {
     return res.json({ error: "Invalid username/password" });
   }
 
-  if (await bcrypt.compare(currentPassword, user.password)) { 
+  if (await bcrypt.compare(currentPassword, user.password)) {
     const encryptedPassword = await bcrypt.hash(newPassword, 10);
-    const userPassword = await User.findOneAndUpdate({ username }, { password: encryptedPassword}).exec();
-    return res.json({ success: "Password Changed!"})
+    const userPassword = await User.findOneAndUpdate(
+      { username },
+      { password: encryptedPassword }
+    ).exec();
+    return res.json({ success: "Password Changed!" });
   } else {
     return res.json({ error: "Incorrect password" });
   }
 };
 
 const leaderboard = async (req, res, next) => {
-  const leaderboard = await User.find({}, 'username wins').lean();
-  if(leaderboard) {
-    return res.json({leaderboard});
-  } else{
+  const leaderboard = await User.find({}, "username wins").lean();
+  if (leaderboard) {
+    return res.json({ leaderboard });
+  } else {
     res.json({
       error: "Leaderboard doesn't exist",
-    })
+    });
   }
-  };
+};
 
 const increaseWins = async (req, res, next) => {
   const { username } = req.body;
-  const user = await User.findOneAndUpdate({ username }, {$inc: { 'wins': 1}}).exec();
-  if(user) {
-    return res.json({wins : user.wins});
+  const user = await User.findOneAndUpdate(
+    { username },
+    { $inc: { wins: 1 } }
+  ).exec();
+  if (user) {
+    return res.json({ wins: user.wins });
   } else {
-    return res.json({error: 'error adding win'});
+    return res.json({ error: "error adding win" });
   }
-}
-
+};
 
 module.exports = {
   register,

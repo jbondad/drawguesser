@@ -75,7 +75,7 @@ export default function Lobby() {
   }, []);
 
   function handleGameStart() {
-    socket.emit("startGame", {code: lobby.roomCode, rounds: rounds} );
+    socket.emit("startGame", { code: lobby.roomCode, rounds: rounds });
   }
 
   function renderUsers() {
@@ -127,15 +127,18 @@ export default function Lobby() {
         <Typography>Waiting for host to start...</Typography>
         {isHost() && (
           <>
-          <GameSettings handleChange={handleSelectRounds} rounds={rounds}></GameSettings>
-          <Button
-            type="submit"
-            variant="contained"
-            color="success"
-            onClick={() => handleGameStart()}
-          >
-            Start Game
-          </Button>
+            <GameSettings
+              handleChange={handleSelectRounds}
+              rounds={rounds}
+            ></GameSettings>
+            <Button
+              type="submit"
+              variant="contained"
+              color="success"
+              onClick={() => handleGameStart()}
+            >
+              Start Game
+            </Button>
           </>
         )}
       </Paper>

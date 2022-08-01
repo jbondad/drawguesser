@@ -3,8 +3,9 @@ import { useEffect, useState, useRef } from "react";
 import socket from "../socket/socket";
 import { useSelector } from "react-redux";
 
-export default function Canvas({ color, strokeWidth }) { // todo: change stroke width
-  const canvasRef = useRef(null); 
+export default function Canvas({ color, strokeWidth }) {
+  // todo: change stroke width
+  const canvasRef = useRef(null);
   const contextRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const currentDrawer = useSelector((state) => state.lobby.game.currentDrawer);
@@ -28,7 +29,7 @@ export default function Canvas({ color, strokeWidth }) { // todo: change stroke 
 
     const context = canvas.getContext("2d");
     context.scale(2, 2);
-    context.lineCap = "round"; 
+    context.lineCap = "round";
     context.lineWidth = 4;
     contextRef.current = context;
 
@@ -80,7 +81,7 @@ export default function Canvas({ color, strokeWidth }) { // todo: change stroke 
   };
 
   const handleMouseMove = ({ nativeEvent }) => {
-    const { offsetX, offsetY } = nativeEvent; 
+    const { offsetX, offsetY } = nativeEvent;
     if (!isDrawing) {
       return;
     }

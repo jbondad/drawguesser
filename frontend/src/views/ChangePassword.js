@@ -57,7 +57,7 @@ export default function ChangePassword() {
         <Typography
           variant="h4"
           sx={{
-            paddingTop: '1em',
+            paddingTop: "1em",
             color: "#3f51b5",
           }}
           component="h4"
@@ -91,16 +91,16 @@ export default function ChangePassword() {
         </div>
 
         <Button
-            type="submit"
-            sx={{
-                marginTop: 'auto',
-            }}
-            variant="contained"
-            color="primary"
-            onClick={() => navigate("/HomePage")}
-          >
-            Back to Home page
-          </Button>
+          type="submit"
+          sx={{
+            marginTop: "auto",
+          }}
+          variant="contained"
+          color="primary"
+          onClick={() => navigate("/HomePage")}
+        >
+          Back to Home page
+        </Button>
       </Paper>
     </>
   );

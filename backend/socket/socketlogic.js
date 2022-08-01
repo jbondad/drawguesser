@@ -10,7 +10,6 @@ const Words = require("../game/wordList");
 
 let roomCollection = new Map();
 exports.socketapp = function (io, socket) {
-
   // createGame - creates a new Room object and returns the roomCode
   socket.on("createGame", (data) => {
     socket.userId = data._id;
@@ -55,11 +54,9 @@ exports.socketapp = function (io, socket) {
     }
   });
 
-
   socket.on("disconnect", () => {
     handleLeaveRoom(socket.room);
   });
-
 
   socket.on("leaveLobby", () => {
     let room;
@@ -89,13 +86,11 @@ exports.socketapp = function (io, socket) {
     sendPlayerList(room);
   });
 
-
   // Send words to choose
   socket.on("wordOptions", () => {
     const words = Words.getWordOptions();
     socket.emit("wordOptionsUpdate", words);
   });
-
 
   // New chat message
   socket.on("newMessage", (data) => {
@@ -126,7 +121,6 @@ exports.socketapp = function (io, socket) {
     }
   });
 
-
   // Drawer chooses a ward
   socket.on("wordChosen", (data) => {
     const { code, word } = data;
@@ -147,7 +141,7 @@ exports.socketapp = function (io, socket) {
   });
 
   // Player starts the game
-  socket.on("startGame", ({code, rounds}) => {
+  socket.on("startGame", ({ code, rounds }) => {
     let room = roomCollection.get(code);
     if (room.playerManager.getPlayerCount() > 1) {
       io.in(code).emit("startedGame");
@@ -179,7 +173,6 @@ exports.socketapp = function (io, socket) {
       }
     }
   }
-
 
   function sendPlayerList(room) {
     io.in(room.roomCode).emit(

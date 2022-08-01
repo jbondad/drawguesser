@@ -6,11 +6,9 @@ const PrivateRoute = ({ children }) => {
   const loggedIn = localStorage.getItem("user") !== null;
   const inLobby = useSelector((state) => state.auth.user.inLobby);
 
-
-  if (children.type.name != "Lobby" && loggedIn){
-    return children
-  }
-  else if (loggedIn && inLobby) {
+  if (children.type.name != "Lobby" && loggedIn) {
+    return children;
+  } else if (loggedIn && inLobby) {
     return children;
   } else if (loggedIn && !inLobby) {
     return <Navigate to="/HomePage" />;
