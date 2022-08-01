@@ -8,7 +8,6 @@ import { state } from "../constants/gameStates";
 import { TwitterPicker } from "react-color";
 import EraserIcon from "../components/EraserIcon";
 import { reset } from "../features/lobbySlice";
-import { increaseWins } from "../api/user";
 
 export default function Game() {
   const navigate = useNavigate();

@@ -2,15 +2,11 @@ import React, { useState } from "react";
 import { TextField, Paper, Typography, Button } from "@mui/material";
 import { Link } from "react-router-dom";
 import { registerUser } from "../api/user";
-import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 export default function SignUp() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
 
   async function createAccount() {
     const user = {

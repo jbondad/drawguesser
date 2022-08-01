@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { TextField, Paper, Typography, Button } from "@mui/material";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { changePassword } from "../api/user";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
@@ -9,7 +9,6 @@ export default function ChangePassword() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const user = useSelector((state) => state.auth.user);
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   async function handleChangePassword() {
